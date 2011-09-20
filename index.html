@@ -4,7 +4,7 @@
 	<title>localStorageDB - A simple database layer for localStorage</title>
 
 	<meta name="descript" content="A simple database library for localStorage with support for databases, tables, fields, and insert, select, query, update, and delete operations." />
-	<meta name="keywords" content="localstorage library, localstorage wrapper, localstorage example, localstorage sql, localstorage linq, web sql, web sql alternative, localstorage database, localstorage tables, localstorage mysql, localstorage query, localstroage structure, localstorage data structure" />
+	<meta name="keywords" content="localstorage library, localstorage wrapper, localstorage example, localstorage sql, localstorage linq, web sql, web sql alternative, localstorage database, localstorage tables, localstorage mysql, localstorage query, localstroage structure, localstorage data structure, html5 storage, html5 database" />
 	
 	<style>
 		body {
@@ -175,7 +175,7 @@ lib.query("books", {author: "ramachandran"});
 <h3>Updating</h3>
 <pre>
 // change the title of books published in 1999 to "Unknown"
-lib.query("books", {year: 1999}, function(row) {
+lib.update("books", {year: 1999}, function(row) {
 	row.title = "Unknown";
 	
 	// the update callback function returns to the modified record
@@ -183,7 +183,7 @@ lib.query("books", {year: 1999}, function(row) {
 });
 
 // add +5 copies to all books published after 2003
-lib.query("books",
+lib.update("books",
 	function(row) {	// select condition callback
 		if(row.year > 2003) {
 			return true;
