@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>localStorageDB - A simple database layer for localStorage</title>
+
+	<meta name="descript" content="A simple database library for localStorage with support for databases, tables, fields, and insert, select, query, update, and delete operations." />
+	<meta name="keywords" content="localstorage library, localstorage wrapper, localstorage example, localstorage sql, localstorage linq, web sql, web sql alternative, localstorage database, localstorage tables, localstorage mysql, localstorage query, localstroage structure, localstorage data structure" />
+	
+	<style>
+		body {
+			margin: 0px;
+			background: #eee;
+			background-position: top center;
+			font-family: Arial;
+			font-size: 12px;
+			line-height: 22px;
+			color: #333;
+		}
+				
+		#main {
+			background: #fff;
+			margin: 0 auto 0 auto;
+			width: 1000px;
+			padding: 20px;
+			
+			box-shadow: 0 0 30px #ddd;
+		}
+
+		.section {
+			border-bottom: 1px solid #ddd;
+			padding-bottom: 25px;
+			margin-bottom: 25px;
+		}
+
+		table {
+			margin-top: 30px;
+			border-spacing: 0;
+			border-color: #ddd;
+		}
+		th {
+			background: #eee;
+		}
+		th, td {
+			padding: 10px;
+			border-color: #ddd;
+		}
+
+		pre {
+			font-size: 15px;
+			padding: 0;
+			margin: 0;
+			background: #f6f6f6;
+			padding: 10px;
+			overflow: auto;
+			overflow-Y: hidden;
+			margin-bottom: 30px;
+		}
+
+		a {
+			color: #cc0000;
+		}
+
+		h1, h2, h3, h4 {
+			margin: 0 0 15px 0;
+		}
+	</style>
+</head>
+<body>
+
+<div id="main">
+	<h1>localStorageDB - a simple, tiny database layer for localStorage</h1>
+	
+	<p>
+		Create simple structured databases and tables in localStorage. Insert / update / delete rows.
+	</p>
+
+	<div class="section">
+
+<h3>Creating a database, table, and populating the table</h3>
+<pre>
+// Initialise. If the database doesn't exist, it is created
+var lib = new localStorageDB("library");
+
+// Check if the database was just created. Useful for initial database setup
+if( lib.isNew() ) {
+
+	// create the "books" table
+	lib.createTable("books", ["id", "title", "author", "year", "copies"]);
+	
+	// insert some data
+	lib.insert("books", {id: "B001", title: "Phantoms in the brain", author: "Ramachandran", year: 1999, copies: 10});
+	lib.insert("books", {id: "B002", title: "The tell-tale brain", author: "Ramachandran", year: 2011, copies: 10});
+	lib.insert("books", {id: "B003", title: "Freakonomics", author: "Levitt and Dubner", year: 2005, copies: 10});
+	lib.insert("books", {id: "B004", title: "Predictably irrational", author: "Ariely", year: 2008, copies: 10});
+	lib.insert("books", {id: "B005", title: "Tesla: Man out of time", author: "Cheney", year: 2001, copies: 10});
+	lib.insert("books", {id: "B006", title: "Salmon fishing in the Yemen", author: "Torday", year: 2007, copies: 10});
+	lib.insert("books", {id: "B007", title: "The user illusion", author: "Norretranders", year: 1999, copies: 10});
+	lib.insert("books", {id: "B008", title: "Hubble: Window of the universe", author: "Sparrow", year: 2010, copies: 10});
+	
+	// commit the database to localStorage
+	// all create/drop/insert/update/delete operations should be committed
+	lib.commit();
+}
+</pre>
+
+<h3>Querying</h3>
+<pre>
+// simple select queries
+lib.query("books", {year: 2011});
+lib.query("books", {year: 1999, author: "Norretranders"});
+
+
+// select all books published after 2003
+lib.query("books", function(row) {	// the callback function is applied to every row in the table
+	if(row.year > 2003) {		// if it returns true, the row is selected
+		return true;
+	} else {
+		return false;
+	}
+});
+
+// select all books by Torday and Sparrow
+lib.query("books", function(row) {
+	if(row.author == "Torday" || row.author == "Sparrow") {
+		return true;
+	} else {
+		return false;
+	}
+});
+</pre>
+
+<h3>Example results from a query</h3>
+<pre>
+// query results are returned as arrays of object literals
+// an ID field with the internal auto-incremented id of the row is also included
+// thus, ID is a reserved field name
+
+lib.query("books", {author: "ramachandran"});
+
+/* results
+[
+ {
+   ID: 1,
+   id: "B001",
+   title: "Phantoms in the brain",
+   author: "Ramachandran",
+   year: 1999,
+   copies: 10
+ },
+ {
+   ID: 2,
+   id: "B002",
+   title: "The tell-tale brain",
+   author: "Ramachandran",
+   year: 2011,
+   copies: 10
+ }
+]
+*/
+</pre>
+
+
+<h3>Updating</h3>
+<pre>
+// change the title of books published in 1999 to "Unknown"
+lib.query("books", {year: 1999}, function(row) {
+	row.title = "Unknown";
+	
+	// the update callback function returns to the modified record
+	return row;
+});
+
+// add +5 copies to all books published after 2003
+lib.query("books",
+	function(row) {	// select condition callback
+		if(row.year > 2003) {
+			return true;
+		} else {
+			return false;
+		}
+	},
+	function(row) { // update function
+		row.year+=5;
+		return row;
+	}
+);
+</pre>
+
+<h3>Deleting</h3>
+<pre>
+// delete all books published in 1999
+lib.delete("books", {year: 1999});
+
+// delete all books published before 2005
+lib.delete("books", function(row) {
+	if(row.year < 2005) {
+		return true;
+	} else {
+		return false;
+	}
+});
+
+lib.commit(); // commit the deletions to localStorage
+</pre>
+
+	</div>
+
+	<table border="1">
+		<thead>
+			<tr>
+				<th>Method</th/>
+				<th>Arguments</th/>
+				<th>Description</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td>localStorageDB()</td>
+				<td>database_name</td>
+				<td>Constructor</td>
+			</tr>
+			<tr>
+				<td>isNew()</td>
+				<td></td>
+				<td>Returns true if a database was created at the time of initialisation with the constructor</td>
+			</tr>
+			<tr>
+				<td>drop()</td>
+				<td></td>
+				<td>Deletes a database, and purges it from localStorage</td>
+			</tr>
+			<tr>
+				<td>tableCount()</td>
+				<td></td>
+				<td>Returns the number of tables in a database</td>
+			</tr>
+			<tr>
+				<td>commit()</td>
+				<td></td>
+				<td>Commits the database to localStorage</td>
+			</tr>
+
+
+			<tr>
+				<td>tableExists()</td>
+				<td>table_name</td>
+				<td>Checks whether a table exists in the database</td>
+			</tr>
+			<tr>
+				<td>createTable()</td>
+				<td>table_name, fields</td>
+				<td>Create a table&mdash;fields is an array of string fieldnames. 'ID' is a reserved fieldname.</td>
+			</tr>
+			<tr>
+				<td>dropTable()</td>
+				<td>table_name</td>
+				<td>Delete a table from the database</td>
+			</tr>
+			<tr>
+				<td>truncate()</td>
+				<td>table_name</td>
+				<td>Empties all records in a table</td>
+			</tr>
+			<tr>
+				<td>rowCount()</td>
+				<td>table_name</td>
+				<td>Returns the number of rows in a table</td>
+			</tr>
+
+			
+			<tr>
+				<td>insert()</td>
+				<td>table_name, data</td>
+				<td>Inserts a row into a table. data is an object literal with field-values. Every row is assigned an auto-incremented numerical id automatically</td>
+			</tr>
+			<tr>
+				<td>query</td>
+				<td>table_name, query</td>
+				<td>Returns an array of rows (object literals) from a table matching the query&mdash;query is either an object literal or a function. Every returned row will have it's internal auto-incremented id assigned to the variable ID</td>
+			</tr>
+			<tr>
+				<td>update()</td>
+				<td>table_name, query, update_function</td>
+				<td>Updates an existing record. query is an object literal or a function. update_function is a function that returns an object literal with the updated values</td>
+			</tr>
+			<tr>
+				<td>delete()</td>
+				<td>table_name, query</td>
+				<td>Deletes rows from a table matching query&mdash;query is either an object literal or a function</td>
+			</tr>
+		</tbody>
+	</table>
+
+	<p>&mdash; <a href="http://kailashnadh.name">Kailash Nadh</a></p>
+
+</div><!-- main //-->
+
+</body>
+</html>
