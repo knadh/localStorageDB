@@ -2,7 +2,7 @@
 	Kailash Nadh (http://kailashnadh.name)
 	
 	localStorageDB
-	v1.0, September 2011
+	September 2011
 	A simple database layer for localStorage
 
 	License	:	GNU Public License ( http://www.fsf.org/copyleft/gpl.html )
@@ -81,6 +81,7 @@ function localStorageDB(db_name) {
 		data.ID = db.tables[table_name].auto_increment;
 		db.data[table_name][ db.tables[table_name].auto_increment ] = data;
 		db.tables[table_name].auto_increment++;
+		return data.ID;
 	}
 	
 	// select rows, given a list of IDs of rows in a table
@@ -153,11 +154,12 @@ function localStorageDB(db_name) {
 		for(var i in ids) {
 			delete db.data[table_name][ ids[i] ];
 		}
+		return ids.length;
 	}
 	
 	// update rows
 	function update(table_name, ids, update_function) {
-		var ID = '';
+		var ID = '', num = 0;
 
 		for(var i in ids) {
 			ID = ids[i];
@@ -174,8 +176,10 @@ function localStorageDB(db_name) {
 				}
 
 				db.data[table_name][ID] = validFields(table_name, new_data);
+				num++;
 			}
 		}
+		return num;
 	}
 	
 
@@ -314,36 +318,29 @@ function localStorageDB(db_name) {
 		
 		// insert a row
 		insert: function(table_name, data) {
-			var result = false;
 			if( !this.tableExists(table_name) ) {
 				error("The table '" + table_name + "' does not exist.");
 			} else {
-				var data = validateData(table_name, data);
-
-				insert(table_name, data);
-				result = true;
+				return insert(table_name, validateData(table_name, data) );
 			}
-			return result;
 		},
 		
 		// update rows
 		update: function(table_name, query, update_function) {
 			var result_ids = [];
 			if(typeof query == 'object') {						// the query has key-value pairs provided
-				var data = validFields(table_name, query);
-				result_ids = queryByValues(table_name, data);
+				result_ids = queryByValues(table_name, validFields(table_name, query));
 			} else if(typeof query == 'function') {				// the query has a conditional map function provided
 				result_ids = queryByFunction(table_name, query);
 			}
 			
-			update(table_name, result_ids, update_function);
+			return update(table_name, result_ids, update_function);
 		},
 
 		// select rows
 		query: function(table_name, query, limit) {
 			if(typeof query == 'object') {				// the query has key-value pairs provided
-				var data = validFields(table_name, query);
-				return select( table_name, queryByValues(table_name, data, limit) );
+				return select( table_name, queryByValues(table_name, validFields(table_name, query), limit) );
 			} else if(typeof query == 'function') {		// the query has a conditional map function provided
 				return select( table_name, queryByFunction(table_name, query, limit) );
 			}
@@ -352,12 +349,13 @@ function localStorageDB(db_name) {
 
 		// delete rows
 		delete: function(table_name, query) {
+			var result_ids = [];
 			if(typeof query == 'object') {
-				var data = validFields(table_name, query);
-				deleteRows( table_name, queryByValues(table_name, data) );
+				result_ids = queryByValues(table_name, validFields(table_name, query));
 			} else if(typeof query == 'function') {
-				deleteRows( table_name, queryByFunction(table_name, query) );
+				result_ids = queryByFunction(table_name, query);
 			}
+			return deleteRows(table_name, result_ids);
 		}
 	}
 }

@@ -118,6 +118,7 @@ lib.update("books",
 );
 </pre>
 
+
 ### Deleting
 <pre>
 // delete all books published in 1999
@@ -134,6 +135,7 @@ lib.delete("books", function(row) {
 
 lib.commit(); // commit the deletions to localStorage
 </pre>
+
 
 # Methods
 <table>
@@ -199,7 +201,7 @@ lib.commit(); // commit the deletions to localStorage
 	<tr>
 		<td>insert()</td>
 		<td>table_name, data</td>
-		<td>Inserts a row into a table. data is an object literal with field-values. Every row is assigned an auto-incremented numerical id automatically</td>
+		<td>Inserts a row into a table and returns its numerical ID. data is an object literal with field-values. Every row is assigned an auto-incremented numerical id automatically</td>
 	</tr>
 	<tr>
 		<td>query</td>
@@ -209,11 +211,11 @@ lib.commit(); // commit the deletions to localStorage
 	<tr>
 		<td>update()</td>
 		<td>table_name, query, update_function</td>
-		<td>Updates an existing record. query is an object literal or a function. update_function is a function that returns an object literal with the updated values</td>
+		<td>Updates existing records in a table matching query, and returns the number of rows affected. query is an object literal or a function. update_function is a function that returns an object literal with the updated values</td>
 	</tr>
 	<tr>
 		<td>delete()</td>
 		<td>table_name, query</td>
-		<td>Deletes rows from a table matching query&mdash;query is either an object literal or a function</td>
+		<td>Deletes rows from a table matching query, and returns the number of rows deleted. query is either an object literal or a function</td>
 	</tr>
 </table>
