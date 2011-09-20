@@ -57,11 +57,24 @@
 		}
 
 		a {
-			color: #cc0000;
+			background: #006EFF;
+			color: #fff;
+			padding: 3px 6px;
+			border-radius: 4px;
+			text-decoration: none;
+		}
+		a:hover {
+			background: #000;
 		}
 
 		h1, h2, h3, h4 {
 			margin: 0 0 15px 0;
+		}
+		
+		.git {
+			font-weight: bold;
+			font-size: 16px;
+			float: right;
 		}
 	</style>
 </head>
@@ -69,11 +82,10 @@
 
 <div id="main">
 	<h1>localStorageDB - a simple, tiny database layer for localStorage</h1>
-	
+	<a href="https://github.com/knadh/localStorageDB" class="git">Download from GitHub</a>
 	<p>
 		Create simple structured databases and tables in localStorage. Insert / update / delete rows.
 	</p>
-
 	<div class="section">
 
 <h3>Creating a database, table, and populating the table</h3>
@@ -291,7 +303,7 @@ lib.commit(); // commit the deletions to localStorage
 		</tbody>
 	</table>
 
-	<p>&mdash; <a href="http://kailashnadh.name">Kailash Nadh</a></p>
+	<p><a href="http://kailashnadh.name">Kailash Nadh</a></p>
 
 </div><!-- main //-->
 
