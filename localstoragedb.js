@@ -162,8 +162,17 @@ function localStorageDB(db_name) {
 		for(var i in ids) {
 			ID = ids[i];
 
-			new_data = update_function( clone(db.data[table_name][ID]) );
-			if(new_data) {
+			var updated_data = update_function( clone(db.data[table_name][ID]) );
+			
+			if(updated_data) {
+				delete updated_data['ID']; // no updates possible to ID
+
+				var new_data = db.data[table_name][ID];				
+				// merge updated data with existing data
+				for(var field in updated_data) {
+					new_data[field] = updated_data[field];
+				}
+
 				db.data[table_name][ID] = validFields(table_name, new_data);
 			}
 		}
