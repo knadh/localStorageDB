@@ -204,7 +204,7 @@ lib.commit(); // commit the deletions to localStorage
 		<td>Inserts a row into a table and returns its numerical ID. data is an object literal with field-values. Every row is assigned an auto-incremented numerical id automatically</td>
 	</tr>
 	<tr>
-		<td>query</td>
+		<td>query()</td>
 		<td>table_name, query</td>
 		<td>Returns an array of rows (object literals) from a table matching the query&mdash;query is either an object literal or a function. Every returned row will have it's internal auto-incremented id assigned to the variable ID</td>
 	</tr>
