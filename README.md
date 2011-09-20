@@ -95,7 +95,7 @@ lib.query("books", {author: "ramachandran"});
 ### Updating
 <pre>
 // change the title of books published in 1999 to "Unknown"
-lib.query("books", {year: 1999}, function(row) {
+lib.update("books", {year: 1999}, function(row) {
 	row.title = "Unknown";
 	
 	// the update callback function returns to the modified record
@@ -103,7 +103,7 @@ lib.query("books", {year: 1999}, function(row) {
 });
 
 // add +5 copies to all books published after 2003
-lib.query("books",
+lib.update("books",
 	function(row) {	// select condition callback
 		if(row.year > 2003) {
 			return true;
