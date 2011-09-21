@@ -5,7 +5,7 @@
 	September 2011
 	A simple database layer for localStorage
 
-	License	:	GNU Public License ( http://www.fsf.org/copyleft/gpl.html )
+	License	:	MIT License
 */
 
 function localStorageDB(db_name) {
@@ -189,6 +189,11 @@ function localStorageDB(db_name) {
 		localStorage[db_id] = JSON.stringify(db);
 	}
 	
+	// serialize the database
+	function serialize() {
+		return JSON.stringify(db);
+	}
+	
 	// throw an error
 	function error(msg) {
 		throw new Error(msg);
@@ -249,6 +254,11 @@ function localStorageDB(db_name) {
 		// delete the database
 		drop: function() {
 			drop();
+		},
+		
+		// serialize the database
+		serialize: function() {
+			return serialize();
 		},
 		
 		// check whether a table exists

@@ -169,6 +169,11 @@ lib.commit(); // commit the deletions to localStorage
 		<td></td>
 		<td>Commits the database to localStorage</td>
 	</tr>
+	<tr>
+		<td>serialize()</td>
+		<td></td>
+		<td>Returns the entire database as serialized JSON</td>
+	</tr>
 
 
 	<tr>
