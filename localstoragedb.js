@@ -62,7 +62,9 @@ function localStorageDB(db_name) {
 		
 	// create a table
 	function createTable(table_name, fields) {
-		fields.splice(fields.indexOf('ID'), 1);
+		if(fields.indexOf('ID') != -1) {	// ID is a reserved field name
+			fields.splice(fields.indexOf('ID'), 1);
+		}
 		fields.unshift('ID');
 		db.tables[table_name] = {fields: fields, auto_increment: 1};
 		db.data[table_name] = {};
