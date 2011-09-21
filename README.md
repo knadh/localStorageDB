@@ -41,6 +41,8 @@ if( lib.isNew() ) {
 lib.query("books", {year: 2011});
 lib.query("books", {year: 1999, author: "Norretranders"});
 
+// select all books
+lib.query("books");
 
 // select all books published after 2003
 lib.query("books", function(row) {	// the callback function is applied to every row in the table
@@ -139,88 +141,106 @@ lib.commit(); // commit the deletions to localStorage
 
 # Methods
 <table>
-	<tr>
-		<th>Method</th/>
-		<th>Arguments</th/>
-		<th>Description</th>
-	</tr>
-	<tr>
-		<td>localStorageDB()</td>
-		<td>database_name</td>
-		<td>Constructor</td>
-	</tr>
-	<tr>
-		<td>isNew()</td>
-		<td></td>
-		<td>Returns true if a database was created at the time of initialisation with the constructor</td>
-	</tr>
-	<tr>
-		<td>drop()</td>
-		<td></td>
-		<td>Deletes a database, and purges it from localStorage</td>
-	</tr>
-	<tr>
-		<td>tableCount()</td>
-		<td></td>
-		<td>Returns the number of tables in a database</td>
-	</tr>
-	<tr>
-		<td>commit()</td>
-		<td></td>
-		<td>Commits the database to localStorage</td>
-	</tr>
-	<tr>
-		<td>serialize()</td>
-		<td></td>
-		<td>Returns the entire database as serialized JSON</td>
-	</tr>
+	<thead>
+		<tr>
+			<th>Method</th/>
+			<th>Arguments</th/>
+			<th>Description</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td>localStorageDB()</td>
+			<td>database_name</td>
+			<td>Constructor</td>
+		</tr>
+		<tr>
+			<td>isNew()</td>
+			<td></td>
+			<td>Returns true if a database was created at the time of initialisation with the constructor</td>
+		</tr>
+		<tr>
+			<td>drop()</td>
+			<td></td>
+			<td>Deletes a database, and purges it from localStorage</td>
+		</tr>
+		<tr>
+			<td>tableCount()</td>
+			<td></td>
+			<td>Returns the number of tables in a database</td>
+		</tr>
+		<tr>
+			<td>commit()</td>
+			<td></td>
+			<td>Commits the database to localStorage</td>
+		</tr>
+		<tr>
+			<td>serialize()</td>
+			<td></td>
+			<td>Returns the entire database as serialized JSON</td>
+		</tr>
 
 
-	<tr>
-		<td>tableExists()</td>
-		<td>table_name</td>
-		<td>Checks whether a table exists in the database</td>
-	</tr>
-	<tr>
-		<td>createTable()</td>
-		<td>table_name, fields</td>
-		<td>Create a table&mdash;fields is an array of string fieldnames. 'ID' is a reserved fieldname.</td>
-	</tr>
-	<tr>
-		<td>dropTable()</td>
-		<td>table_name</td>
-		<td>Delete a table from the database</td>
-	</tr>
-	<tr>
-		<td>truncate()</td>
-		<td>table_name</td>
-		<td>Empties all records in a table</td>
-	</tr>
-	<tr>
-		<td>rowCount()</td>
-		<td>table_name</td>
-		<td>Returns the number of rows in a table</td>
-	</tr>
+		<tr>
+			<td>tableExists()</td>
+			<td>table_name</td>
+			<td>Checks whether a table exists in the database</td>
+		</tr>
+		<tr>
+			<td>createTable()</td>
+			<td>table_name, fields</td>
+			<td>Creates a table<br />
+				- fields is an array of string fieldnames. 'ID' is a reserved fieldname.
+			</td>
+		</tr>
+		<tr>
+			<td>dropTable()</td>
+			<td>table_name</td>
+			<td>Deletes a table from the database</td>
+		</tr>
+		<tr>
+			<td>truncate()</td>
+			<td>table_name</td>
+			<td>Empties all records in a table and resets the internal auto increment ID to 0</td>
+		</tr>
+		<tr>
+			<td>rowCount()</td>
+			<td>table_name</td>
+			<td>Returns the number of rows in a table</td>
+		</tr>
 
-	
-	<tr>
-		<td>insert()</td>
-		<td>table_name, data</td>
-		<td>Inserts a row into a table and returns its numerical ID. data is an object literal with field-values. Every row is assigned an auto-incremented numerical id automatically</td>
-	</tr>
-	<tr>
-		<td>query()</td>
-		<td>table_name, query</td>
-		<td>Returns an array of rows (object literals) from a table matching the query&mdash;query is either an object literal or a function. Every returned row will have it's internal auto-incremented id assigned to the variable ID</td>
-	</tr>
-	<tr>
-		<td>update()</td>
-		<td>table_name, query, update_function</td>
-		<td>Updates existing records in a table matching query, and returns the number of rows affected. query is an object literal or a function. update_function is a function that returns an object literal with the updated values</td>
-	</tr>
-	<tr>
-		<td>delete()</td>
-		<td>table_name, query</td>
-		<td>Deletes rows from a table matching query, and returns the number of rows deleted. query is either an object literal or a function</td>
-	</tr>
+		
+		<tr>
+			<td>insert()</td>
+			<td>table_name, data</td>
+			<td>Inserts a row into a table and returns its numerical ID<br />
+				- data is an object literal with field-values<br />
+				Every row is assigned an auto-incremented numerical ID automatically
+			</td>
+		</tr>
+		<tr>
+			<td>query()</td>
+			<td>table_name, query, limit</td>
+			<td>
+				Returns an array of rows (object literals) from a table matching the query.<br />
+				- query is either an object literal or null. If query is not supplied, all rows are returned<br />
+				- limit is the maximum number of rows to be returned<br />
+				Every returned row will have it's internal auto-incremented id assigned to the variable ID</td>
+		</tr>
+		<tr>
+			<td>update()</td>
+			<td>table_name, query, update_function</td>
+			<td>Updates existing records in a table matching query, and returns the number of rows affected<br />
+				- query is an object literal or a function. If query is not supplied, all rows are updated<br />
+				- update_function is a function that returns an object literal with the updated values
+			</td>
+		</tr>
+		<tr>
+			<td>delete()</td>
+			<td>table_name, query</td>
+			<td>Deletes rows from a table matching query, and returns the number of rows deleted<br />
+				- query is either an object literal or a function. If query is not supplied, all rows are deleted
+			</td>
+		</tr>
+	</tbody>
 </table>

@@ -47,6 +47,19 @@ function localStorageDB(db_name) {
 	}
 
 	// _________ table functions
+	
+	// check whether a table exists
+	function tableExists(table_name) {
+		return db.tables[table_name] ? true : false;
+	}
+	
+	// check whether a table exists, and if not, throw an error
+	function tableExistsWarn(table_name) {
+		if(!tableExists(table_name)) {
+			error("The table '" + table_name + "' does not exist.");
+		}
+	}
+		
 	// create a table
 	function createTable(table_name, fields) {
 		fields.splice(fields.indexOf('ID'), 1);
@@ -142,6 +155,19 @@ function localStorageDB(db_name) {
 			if( query_function( clone(row) ) == true ) {	// it's a match if the supplied conditional function is satisfied
 				result_ids.push(ID);
 			}
+			if(result_ids.length == limit) {
+				break;
+			}
+		}
+		return result_ids;
+	}
+	
+	// return all the IDs in a table
+	function getIDs(table_name, limit) {
+		var result_ids = [];
+		for(var ID in db.data[table_name]) {
+			result_ids.push(ID);
+			
 			if(result_ids.length == limit) {
 				break;
 			}
@@ -263,7 +289,7 @@ function localStorageDB(db_name) {
 		
 		// check whether a table exists
 		tableExists: function(table_name) {
-			return db.tables[table_name] ? true : false;
+			return tableExists();
 		},
 		
 		// number of tables in the database
@@ -301,66 +327,66 @@ function localStorageDB(db_name) {
 		
 		// drop a table
 		dropTable: function(table_name) {
-			if(tableExists(table_name)) {
-				dropTable(table_name);
-			} else {
-				error("The table '" + table_name + "' does not exist.");
-			}
+			tableExistsWarn(table_name);
+			dropTable(table_name);
 		},
 		
 		// empty a table
 		truncate: function(table_name) {
-			if(tableExists(table_name)) {
-				truncate(table_name);
-			} else {
-				error("The table '" + table_name + "' does not exist.");
-			}
+			tableExistsWarn(table_name);
+			truncate(table_name);
 		},
 		
 		// number of rows in a table
 		rowCount: function(table_name) {
-			if( !this.tableExists(table_name) ) {
-				error("The table '" + table_name + "' does not exist.");
-			} else {
-				return rowCount(table_name);
-			}
+			tableExistsWarn(table_name);
+			return rowCount(table_name);
 		},
 		
 		// insert a row
 		insert: function(table_name, data) {
-			if( !this.tableExists(table_name) ) {
-				error("The table '" + table_name + "' does not exist.");
-			} else {
-				return insert(table_name, validateData(table_name, data) );
-			}
+			tableExistsWarn(table_name);
+			return insert(table_name, validateData(table_name, data) );
 		},
 		
 		// update rows
 		update: function(table_name, query, update_function) {
+			tableExistsWarn(table_name);
+
 			var result_ids = [];
-			if(typeof query == 'object') {						// the query has key-value pairs provided
+			if(!query) {
+				result_ids = getIDs(table_name);				// there is no query. applies to all records
+			} else if(typeof query == 'object') {				// the query has key-value pairs provided
 				result_ids = queryByValues(table_name, validFields(table_name, query));
 			} else if(typeof query == 'function') {				// the query has a conditional map function provided
 				result_ids = queryByFunction(table_name, query);
 			}
-			
 			return update(table_name, result_ids, update_function);
 		},
 
 		// select rows
 		query: function(table_name, query, limit) {
-			if(typeof query == 'object') {				// the query has key-value pairs provided
-				return select( table_name, queryByValues(table_name, validFields(table_name, query), limit) );
+			tableExistsWarn(table_name);
+			
+			var result_ids = [];
+			if(!query) {
+				result_ids = getIDs(table_name, limit); // no conditions given, return all records
+			} else if(typeof query == 'object') {			// the query has key-value pairs provided
+				result_ids = queryByValues(table_name, validFields(table_name, query), limit);
 			} else if(typeof query == 'function') {		// the query has a conditional map function provided
-				return select( table_name, queryByFunction(table_name, query, limit) );
+				result_ids = queryByFunction(table_name, query, limit);
 			}
-			return [];
+			return select(table_name, result_ids, limit);
 		},
 
 		// delete rows
 		delete: function(table_name, query) {
+			tableExistsWarn(table_name);
+
 			var result_ids = [];
-			if(typeof query == 'object') {
+			if(!query) {
+				result_ids = getIDs(table_name);
+			} else if(typeof query == 'object') {
 				result_ids = queryByValues(table_name, validFields(table_name, query));
 			} else if(typeof query == 'function') {
 				result_ids = queryByFunction(table_name, query);
