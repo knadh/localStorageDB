@@ -291,7 +291,7 @@ function localStorageDB(db_name) {
 		
 		// check whether a table exists
 		tableExists: function(table_name) {
-			return tableExists();
+			return tableExists(table_name);
 		},
 		
 		// number of tables in the database
