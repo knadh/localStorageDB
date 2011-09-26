@@ -314,7 +314,7 @@ function localStorageDB(db_name) {
 				
 				if(is_valid) {
 					// cannot use indexOf due to <IE9 incompatibility
-					// de-duplicate the fields
+					// de-duplicate the field list
 					var fields_literal = {};
 					for(var i in fields) {
 						fields_literal[ fields[i] ] = true;
@@ -391,7 +391,7 @@ function localStorageDB(db_name) {
 		},
 
 		// delete rows
-		delete: function(table_name, query) {
+		deleteRows: function(table_name, query) {
 			tableExistsWarn(table_name);
 
 			var result_ids = [];

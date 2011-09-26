@@ -124,10 +124,10 @@ lib.update("books",
 ### Deleting
 <pre>
 // delete all books published in 1999
-lib.delete("books", {year: 1999});
+lib.deleteRows("books", {year: 1999});
 
 // delete all books published before 2005
-lib.delete("books", function(row) {
+lib.deleteRows("books", function(row) {
 	if(row.year < 2005) {
 		return true;
 	} else {
@@ -236,7 +236,7 @@ lib.commit(); // commit the deletions to localStorage
 			</td>
 		</tr>
 		<tr>
-			<td>delete()</td>
+			<td>deleteRows()</td>
 			<td>table_name, query</td>
 			<td>Deletes rows from a table matching query, and returns the number of rows deleted<br />
 				- query is either an object literal or a function. If query is not supplied, all rows are deleted
