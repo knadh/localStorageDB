@@ -62,10 +62,6 @@ function localStorageDB(db_name) {
 		
 	// create a table
 	function createTable(table_name, fields) {
-		if(fields.indexOf('ID') != -1) {	// ID is a reserved field name
-			fields.splice(fields.indexOf('ID'), 1);
-		}
-		fields.unshift('ID');
 		db.tables[table_name] = {fields: fields, auto_increment: 1};
 		db.data[table_name] = {};
 	}
@@ -317,6 +313,19 @@ function localStorageDB(db_name) {
 				}
 				
 				if(is_valid) {
+					// cannot use indexOf due to <IE9 incompatibility
+					// de-duplicate the fields
+					var fields_literal = {};
+					for(var i in fields) {
+						fields_literal[ fields[i] ] = true;
+					}
+					delete fields_literal['ID']; // ID is a reserved field name
+
+					fields = ['ID'];
+					for(var field in fields_literal) {
+						fields.push(field);
+					}
+
 					createTable(table_name, fields);
 					result = true;
 				} else {
