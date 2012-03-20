@@ -41,7 +41,9 @@ function localStorageDB(db_name) {
 	function tableCount() {
 		var count = 0;
 		for(var table in db.tables) {
-			count++;
+			if( db.tables.hasOwnProperty(table) ) {
+				count++;
+			}
 		}
 		return count;
 	}
@@ -82,7 +84,9 @@ function localStorageDB(db_name) {
 	function rowCount(table_name) {
 		var count = 0;
 		for(var ID in db.data[table_name]) {
-			count++;
+			if( db.data[table_name].hasOwnProperty(ID) ) {
+				count++;
+			}
 		}
 		return count;
 	}
@@ -98,7 +102,7 @@ function localStorageDB(db_name) {
 	// select rows, given a list of IDs of rows in a table
 	function select(table_name, ids) {
 		var ID = null, results = [], row = null;
-		for(var i in ids) {
+		for(var i=0; i<ids.length; i++) {
 			ID = ids[i];
 			row = db.data[table_name][ID];
 			results.push( clone(row) );
@@ -114,10 +118,18 @@ function localStorageDB(db_name) {
 
 		// loop through all the records in the table, looking for matches
 		for(var ID in db.data[table_name]) {
+			if( !db.data[table_name].hasOwnProperty(ID) ) {
+				continue;
+			}
+			
 			row = db.data[table_name][ID];
 			exists = false;
 
 			for(var field in data) {
+				if( !data.hasOwnProperty(field) ) {
+					continue;
+				}
+
 				if(typeof data[field] == 'string') {	// if the field is a string, do a case insensitive comparison
 					if( row[field].toString().toLowerCase() == data[field].toString().toLowerCase() ) {
 						exists = true;
@@ -148,6 +160,10 @@ function localStorageDB(db_name) {
 
 		// loop through all the records in the table, looking for matches
 		for(var ID in db.data[table_name]) {
+			if( !db.data[table_name].hasOwnProperty(ID) ) {
+				continue;
+			}
+
 			row = db.data[table_name][ID];
 
 			if( query_function( clone(row) ) == true ) {	// it's a match if the supplied conditional function is satisfied
@@ -164,10 +180,12 @@ function localStorageDB(db_name) {
 	function getIDs(table_name, limit) {
 		var result_ids = [];
 		for(var ID in db.data[table_name]) {
-			result_ids.push(ID);
-			
-			if(result_ids.length == limit) {
-				break;
+			if( db.data[table_name].hasOwnProperty(ID) ) {
+				result_ids.push(ID);
+
+				if(result_ids.length == limit) {
+					break;
+				}
 			}
 		}
 		return result_ids;
@@ -175,8 +193,10 @@ function localStorageDB(db_name) {
 	
 	// delete rows, given a list of their IDs in a table
 	function deleteRows(table_name, ids) {
-		for(var i in ids) {
-			delete db.data[table_name][ ids[i] ];
+		for(var i=0; i<ids.length; i++) {
+			if( db.data[table_name].hasOwnProperty(ids[i]) ) {
+				delete db.data[table_name][ ids[i] ];
+			}
 		}
 		return ids.length;
 	}
@@ -185,18 +205,20 @@ function localStorageDB(db_name) {
 	function update(table_name, ids, update_function) {
 		var ID = '', num = 0;
 
-		for(var i in ids) {
+		for(var i=0; i<ids.length; i++) {
 			ID = ids[i];
 
 			var updated_data = update_function( clone(db.data[table_name][ID]) );
-			
+
 			if(updated_data) {
 				delete updated_data['ID']; // no updates possible to ID
 
 				var new_data = db.data[table_name][ID];				
 				// merge updated data with existing data
 				for(var field in updated_data) {
-					new_data[field] = updated_data[field];
+					if( updated_data.hasOwnProperty(field) ) {
+						new_data[field] = updated_data[field];
+					}
 				}
 
 				db.data[table_name][ID] = validFields(table_name, new_data);
@@ -227,7 +249,9 @@ function localStorageDB(db_name) {
 	function clone(obj) {
 		var new_obj = {};
 		for(var key in obj) {
-			new_obj[key] = obj[key];
+			if( obj.hasOwnProperty(key) ) {
+				new_obj[key] = obj[key];
+			}
 		}
 		return new_obj;
 	}
@@ -240,7 +264,8 @@ function localStorageDB(db_name) {
 	// given a data list, only retain valid fields in a table
 	function validFields(table_name, data) {
 		var field = '', new_data = {};
-		for(var i in db.tables[table_name].fields) {
+
+		for(var i=0; i<db.tables[table_name].fields.length; i++) {
 			field = db.tables[table_name].fields[i];
 			
 			if(data[field]) {
@@ -253,7 +278,7 @@ function localStorageDB(db_name) {
 	// given a data list, populate with valid field names of a table
 	function validateData(table_name, data) {
 		var field = '', new_data = {};
-		for(var i in db.tables[table_name].fields) {
+		for(var i=0; i<db.tables[table_name].fields.length; i++) {
 			field = db.tables[table_name].fields[i];
 			new_data[field] = data[field] ? data[field] : null;
 		}
@@ -305,7 +330,7 @@ function localStorageDB(db_name) {
 			} else {
 				// make sure field names are valid
 				var is_valid = true;
-				for(var i in fields) {
+				for(var i=0; i<fields.length; i++) {
 					if(!validateName(fields[i])) {
 						is_valid = false;
 						break;
@@ -316,14 +341,16 @@ function localStorageDB(db_name) {
 					// cannot use indexOf due to <IE9 incompatibility
 					// de-duplicate the field list
 					var fields_literal = {};
-					for(var i in fields) {
+					for(var i=0; i<fields.length; i++) {
 						fields_literal[ fields[i] ] = true;
 					}
 					delete fields_literal['ID']; // ID is a reserved field name
 
 					fields = ['ID'];
 					for(var field in fields_literal) {
-						fields.push(field);
+						if( fields_literal.hasOwnProperty(field) ) {
+							fields.push(field);
+						}
 					}
 
 					createTable(table_name, fields);
