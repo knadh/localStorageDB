@@ -5,6 +5,8 @@
 	September 2011
 	A simple database layer for localStorage
 
+	v 1.8 November 2012
+
 	License	:	MIT License
 */
 
@@ -385,6 +387,35 @@ function localStorageDB(db_name) {
 		insert: function(table_name, data) {
 			tableExistsWarn(table_name);
 			return insert(table_name, validateData(table_name, data) );
+		},
+
+		// insert or update based on a given condition
+		insertOrUpdate: function(table_name, data, query) {
+			tableExistsWarn(table_name);
+
+			var result_ids = [];
+			if(!query) {
+				result_ids = getIDs(table_name);				// there is no query. applies to all records
+			} else if(typeof query == 'object') {				// the query has key-value pairs provided
+				result_ids = queryByValues(table_name, validFields(table_name, query));
+			} else if(typeof query == 'function') {				// the query has a conditional map function provided
+				result_ids = queryByFunction(table_name, query);
+			}
+
+			// no existing records matched, so insert a new row
+			if(result_ids.length == 0) {
+				return insert(table_name, validateData(table_name, data) );
+			} else {
+				var ids = [];
+				for(var n=0; n<result_ids.length; n++) {
+					update(table_name, result_ids, function(o) {
+						ids.push(o.ID);
+						return data;
+					});
+				}
+
+				return ids;
+			}
 		},
 		
 		// update rows
