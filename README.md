@@ -1,9 +1,11 @@
-# localStorageDB
+# localStorageDB 1.8
 ### a simple, tiny database layer for localStorage
-Kailash Nadh, September 2011
+Kailash Nadh
 
 Documentation: http://kailashnadh.name/code/localstoragedb
 Licensed under the MIT license.
+
+v 1.8 November 2012
 
 # Usage / Examples
 ### Creating a database, table, and populating the table
@@ -16,17 +18,17 @@ var lib = new localStorageDB("library");
 if( lib.isNew() ) {
 
 	// create the "books" table
-	lib.createTable("books", ["id", "title", "author", "year", "copies"]);
+	lib.createTable("books", ["code", "title", "author", "year", "copies"]);
 	
 	// insert some data
-	lib.insert("books", {id: "B001", title: "Phantoms in the brain", author: "Ramachandran", year: 1999, copies: 10});
-	lib.insert("books", {id: "B002", title: "The tell-tale brain", author: "Ramachandran", year: 2011, copies: 10});
-	lib.insert("books", {id: "B003", title: "Freakonomics", author: "Levitt and Dubner", year: 2005, copies: 10});
-	lib.insert("books", {id: "B004", title: "Predictably irrational", author: "Ariely", year: 2008, copies: 10});
-	lib.insert("books", {id: "B005", title: "Tesla: Man out of time", author: "Cheney", year: 2001, copies: 10});
-	lib.insert("books", {id: "B006", title: "Salmon fishing in the Yemen", author: "Torday", year: 2007, copies: 10});
-	lib.insert("books", {id: "B007", title: "The user illusion", author: "Norretranders", year: 1999, copies: 10});
-	lib.insert("books", {id: "B008", title: "Hubble: Window of the universe", author: "Sparrow", year: 2010, copies: 10});
+	lib.insert("books", {code: "B001", title: "Phantoms in the brain", author: "Ramachandran", year: 1999, copies: 10});
+	lib.insert("books", {code: "B002", title: "The tell-tale brain", author: "Ramachandran", year: 2011, copies: 10});
+	lib.insert("books", {code: "B003", title: "Freakonomics", author: "Levitt and Dubner", year: 2005, copies: 10});
+	lib.insert("books", {code: "B004", title: "Predictably irrational", author: "Ariely", year: 2008, copies: 10});
+	lib.insert("books", {code: "B005", title: "Tesla: Man out of time", author: "Cheney", year: 2001, copies: 10});
+	lib.insert("books", {code: "B006", title: "Salmon fishing in the Yemen", author: "Torday", year: 2007, copies: 10});
+	lib.insert("books", {code: "B007", title: "The user illusion", author: "Norretranders", year: 1999, copies: 10});
+	lib.insert("books", {code: "B008", title: "Hubble: Window of the universe", author: "Sparrow", year: 2010, copies: 10});
 	
 	// commit the database to localStorage
 	// all create/drop/insert/update/delete operations should be committed
@@ -75,7 +77,7 @@ lib.query("books", {author: "ramachandran"});
 [
  {
    ID: 1,
-   id: "B001",
+   code: "B001",
    title: "Phantoms in the brain",
    author: "Ramachandran",
    year: 1999,
@@ -83,7 +85,7 @@ lib.query("books", {author: "ramachandran"});
  },
  {
    ID: 2,
-   id: "B002",
+   code: "B002",
    title: "The tell-tale brain",
    author: "Ramachandran",
    year: 2011,
@@ -120,6 +122,15 @@ lib.update("books",
 );
 </pre>
 
+### Insert or Update conditionally
+<pre>
+// if there's a book with code B003, update it, or insert it as a new row
+lib.insertOrUpdate("books", {code: 'B003'}, {	code: "B003",
+						title: "Freakonomics",
+						author: "Levitt and Dubner",
+						year: 2005,
+						copies: 15});
+</pre>
 
 ### Deleting
 <pre>
@@ -235,6 +246,16 @@ lib.commit(); // commit the deletions to localStorage
 				- update_function is a function that returns an object literal with the updated values
 			</td>
 		</tr>
+			<tr>
+				<td>insertOrUpdate()</td>
+				<td>table_name, data, query</td>
+				<td>Inserts a row into a table if the given query matches no results, or updates the rows matching the query.<br />
+					- query is either an object literal, function, or null.<br />
+					- data is an object literal with field-values
+					<br /><br />
+					Returns the numerical ID if a new row was inserted, or an array of IDs if rows were updated
+				</td>
+			</tr>
 		<tr>
 			<td>deleteRows()</td>
 			<td>table_name, query</td>
