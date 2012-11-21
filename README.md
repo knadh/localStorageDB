@@ -1,4 +1,4 @@
-# localStorageDB 1.8
+# localStorageDB 1.9
 ### a simple, tiny database layer for localStorage, sessionStorage
 Kailash Nadh
 
