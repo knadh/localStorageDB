@@ -1,6 +1,6 @@
 /*
 	Kailash Nadh (http://kailashnadh.name)
-	
+
 	localStorageDB
 	September 2011
 	A simple database layer for localStorage
@@ -10,15 +10,16 @@
 	License	:	MIT License
 */
 
-function localStorageDB(db_name) {
+function localStorageDB(db_name,customStorage) {
 
 	var db_prefix = 'db_',
 		db_id = db_prefix + db_name,
 		db_new = false,	// this flag determines whether a new database was created during an object initialisation
-		db = null;
+		db = null,
+		db_object = customStorage?customStorage:localStorage;
 
 	// if the database doesn't exist, create it
-	db = localStorage[ db_id ];
+	db = db_object[ db_id ];
 	if( !( db && (db = JSON.parse(db)) && db.tables && db.data ) ) {
 		if(!validateName(db_name)) {
 			error("The name '" + db_name + "'" + " contains invalid characters.");
@@ -28,17 +29,17 @@ function localStorageDB(db_name) {
 			db_new = true;
 		}
 	}
-	
-	
+
+
 	// ______________________ private methods
-	
+
 	// _________ database functions
 	// drop the database
 	function drop() {
-		delete localStorage[db_id];
+		delete db_object[db_id];
 		db = null;
 	}
-			
+
 	// number of tables in the database
 	function tableCount() {
 		var count = 0;
@@ -51,37 +52,37 @@ function localStorageDB(db_name) {
 	}
 
 	// _________ table functions
-	
+
 	// check whether a table exists
 	function tableExists(table_name) {
 		return db.tables[table_name] ? true : false;
 	}
-	
+
 	// check whether a table exists, and if not, throw an error
 	function tableExistsWarn(table_name) {
 		if(!tableExists(table_name)) {
 			error("The table '" + table_name + "' does not exist.");
 		}
 	}
-		
+
 	// create a table
 	function createTable(table_name, fields) {
 		db.tables[table_name] = {fields: fields, auto_increment: 1};
 		db.data[table_name] = {};
 	}
-	
+
 	// drop a table
 	function dropTable(table_name) {
 		delete db.tables[table_name];
 		delete db.data[table_name];
 	}
-	
+
 	// empty a table
 	function truncate(table_name) {
 		db.tables[table_name].auto_increment = 1;
 		db.data[table_name] = {};
 	}
-	
+
 	// number of rows in a table
 	function rowCount(table_name) {
 		var count = 0;
@@ -92,7 +93,7 @@ function localStorageDB(db_name) {
 		}
 		return count;
 	}
-	
+
 	// insert a new row
 	function insert(table_name, data) {
 		data.ID = db.tables[table_name].auto_increment;
@@ -100,7 +101,7 @@ function localStorageDB(db_name) {
 		db.tables[table_name].auto_increment++;
 		return data.ID;
 	}
-	
+
 	// select rows, given a list of IDs of rows in a table
 	function select(table_name, ids) {
 		var ID = null, results = [], row = null;
@@ -111,7 +112,7 @@ function localStorageDB(db_name) {
 		}
 		return results;
 	}
-	
+
 	// select rows in a table by field-value pairs, returns the IDs of matches
 	function queryByValues(table_name, data, limit) {
 		var result_ids = [],
@@ -123,7 +124,7 @@ function localStorageDB(db_name) {
 			if( !db.data[table_name].hasOwnProperty(ID) ) {
 				continue;
 			}
-			
+
 			row = db.data[table_name][ID];
 			exists = false;
 
@@ -153,7 +154,7 @@ function localStorageDB(db_name) {
 		}
 		return result_ids;
 	}
-	
+
 	// select rows in a table by a function, returns the IDs of matches
 	function queryByFunction(table_name, query_function, limit) {
 		var result_ids = [],
@@ -177,7 +178,7 @@ function localStorageDB(db_name) {
 		}
 		return result_ids;
 	}
-	
+
 	// return all the IDs in a table
 	function getIDs(table_name, limit) {
 		var result_ids = [];
@@ -192,7 +193,7 @@ function localStorageDB(db_name) {
 		}
 		return result_ids;
 	}
-	
+
 	// delete rows, given a list of their IDs in a table
 	function deleteRows(table_name, ids) {
 		for(var i=0; i<ids.length; i++) {
@@ -202,7 +203,7 @@ function localStorageDB(db_name) {
 		}
 		return ids.length;
 	}
-	
+
 	// update rows
 	function update(table_name, ids, update_function) {
 		var ID = '', num = 0;
@@ -215,7 +216,7 @@ function localStorageDB(db_name) {
 			if(updated_data) {
 				delete updated_data['ID']; // no updates possible to ID
 
-				var new_data = db.data[table_name][ID];				
+				var new_data = db.data[table_name][ID];
 				// merge updated data with existing data
 				for(var field in updated_data) {
 					if( updated_data.hasOwnProperty(field) ) {
@@ -229,24 +230,24 @@ function localStorageDB(db_name) {
 		}
 		return num;
 	}
-	
+
 
 
 	// commit the database to localStorage
 	function commit() {
-		localStorage[db_id] = JSON.stringify(db);
+		db_object[db_id] = JSON.stringify(db);
 	}
-	
+
 	// serialize the database
 	function serialize() {
 		return JSON.stringify(db);
 	}
-	
+
 	// throw an error
 	function error(msg) {
 		throw new Error(msg);
 	}
-	
+
 	// clone an object
 	function clone(obj) {
 		var new_obj = {};
@@ -257,26 +258,26 @@ function localStorageDB(db_name) {
 		}
 		return new_obj;
 	}
-	
+
 	// validate db, table, field names (alpha-numeric only)
 	function validateName(name) {
 		return name.match(/[^a-z_0-9]/ig) ? false : true;
 	}
-	
+
 	// given a data list, only retain valid fields in a table
 	function validFields(table_name, data) {
 		var field = '', new_data = {};
 
 		for(var i=0; i<db.tables[table_name].fields.length; i++) {
 			field = db.tables[table_name].fields[i];
-			
+
 			if(data[field]) {
 				new_data[field] = data[field];
 			}
 		}
 		return new_data;
 	}
-	
+
 	// given a data list, populate with valid field names of a table
 	function validateData(table_name, data) {
 		var field = '', new_data = {};
@@ -286,7 +287,7 @@ function localStorageDB(db_name) {
 		}
 		return new_data;
 	}
-	
+
 
 
 	// ______________________ public methods
@@ -296,32 +297,32 @@ function localStorageDB(db_name) {
 		commit: function() {
 			commit();
 		},
-		
+
 		// is this instance a newly created database?
 		isNew: function() {
 			return db_new;
 		},
-		
+
 		// delete the database
 		drop: function() {
 			drop();
 		},
-		
+
 		// serialize the database
 		serialize: function() {
 			return serialize();
 		},
-		
+
 		// check whether a table exists
 		tableExists: function(table_name) {
 			return tableExists(table_name);
 		},
-		
+
 		// number of tables in the database
 		tableCount: function() {
 			return tableCount();
 		},
-		
+
 		// create a table
 		createTable: function(table_name, fields) {
 			var result = false;
@@ -338,7 +339,7 @@ function localStorageDB(db_name) {
 						break;
 					}
 				}
-				
+
 				if(is_valid) {
 					// cannot use indexOf due to <IE9 incompatibility
 					// de-duplicate the field list
@@ -364,25 +365,25 @@ function localStorageDB(db_name) {
 
 			return result;
 		},
-		
+
 		// drop a table
 		dropTable: function(table_name) {
 			tableExistsWarn(table_name);
 			dropTable(table_name);
 		},
-		
+
 		// empty a table
 		truncate: function(table_name) {
 			tableExistsWarn(table_name);
 			truncate(table_name);
 		},
-		
+
 		// number of rows in a table
 		rowCount: function(table_name) {
 			tableExistsWarn(table_name);
 			return rowCount(table_name);
 		},
-		
+
 		// insert a row
 		insert: function(table_name, data) {
 			tableExistsWarn(table_name);
@@ -417,7 +418,7 @@ function localStorageDB(db_name) {
 				return ids;
 			}
 		},
-		
+
 		// update rows
 		update: function(table_name, query, update_function) {
 			tableExistsWarn(table_name);
@@ -436,7 +437,7 @@ function localStorageDB(db_name) {
 		// select rows
 		query: function(table_name, query, limit) {
 			tableExistsWarn(table_name);
-			
+
 			var result_ids = [];
 			if(!query) {
 				result_ids = getIDs(table_name, limit); // no conditions given, return all records
