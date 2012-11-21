@@ -126,7 +126,7 @@ function localStorageDB(db_name, engine) {
 			}
 			
 			row = db.data[table_name][ID];
-			exists = false;
+			exists = true;
 
 			for(var field in data) {
 				if( !data.hasOwnProperty(field) ) {
@@ -134,13 +134,13 @@ function localStorageDB(db_name, engine) {
 				}
 
 				if(typeof data[field] == 'string') {	// if the field is a string, do a case insensitive comparison
-					if( row[field].toString().toLowerCase() == data[field].toString().toLowerCase() ) {
-						exists = true;
+					if( row[field].toString().toLowerCase() != data[field].toString().toLowerCase() ) {
+						exists = false;
 						break;
 					}
 				} else {
-					if( row[field] == data[field] ) {
-						exists = true;
+					if( row[field] != data[field] ) {
+						exists = false;
 						break;
 					}
 				}
