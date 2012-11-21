@@ -1,18 +1,18 @@
 # localStorageDB 1.8
-### a simple, tiny database layer for localStorage
+### a simple, tiny database layer for localStorage, sessionStorage
 Kailash Nadh
 
 Documentation: http://kailashnadh.name/code/localstoragedb
 Licensed under the MIT license.
 
-v 1.8 November 2012
+v 1.9 November 2012
 
 # Usage / Examples
 ### Creating a database, table, and populating the table
 
 <pre>
 // Initialise. If the database doesn't exist, it is created
-var lib = new localStorageDB("library");
+var lib = new localStorageDB("library", localStorage);
 
 // Check if the database was just created. Useful for initial database setup
 if( lib.isNew() ) {
@@ -162,8 +162,10 @@ lib.commit(); // commit the deletions to localStorage
 	<tbody>
 		<tr>
 			<td>localStorageDB()</td>
-			<td>database_name</td>
-			<td>Constructor</td>
+			<td>database_name, storage_engine</td>
+			<td>Constructor<br />
+				- storage_engine can either be localStorage (default) or sessionStorage
+			</td>
 		</tr>
 		<tr>
 			<td>isNew()</td>

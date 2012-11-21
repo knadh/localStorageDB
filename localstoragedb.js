@@ -5,20 +5,21 @@
 	September 2011
 	A simple database layer for localStorage
 
-	v 1.8 November 2012
+	v 1.9 November 2012
 
 	License	:	MIT License
 */
 
-function localStorageDB(db_name) {
+function localStorageDB(db_name, engine) {
 
 	var db_prefix = 'db_',
 		db_id = db_prefix + db_name,
 		db_new = false,	// this flag determines whether a new database was created during an object initialisation
-		db = null;
+		db = null,
+		storage = (engine == sessionStorage ? sessionStorage: localStorage);
 
 	// if the database doesn't exist, create it
-	db = localStorage[ db_id ];
+	db = storage[ db_id ];
 	if( !( db && (db = JSON.parse(db)) && db.tables && db.data ) ) {
 		if(!validateName(db_name)) {
 			error("The name '" + db_name + "'" + " contains invalid characters.");
@@ -35,7 +36,7 @@ function localStorageDB(db_name) {
 	// _________ database functions
 	// drop the database
 	function drop() {
-		delete localStorage[db_id];
+		delete storage[db_id];
 		db = null;
 	}
 			
@@ -234,7 +235,7 @@ function localStorageDB(db_name) {
 
 	// commit the database to localStorage
 	function commit() {
-		localStorage[db_id] = JSON.stringify(db);
+		storage[db_id] = JSON.stringify(db);
 	}
 	
 	// serialize the database
