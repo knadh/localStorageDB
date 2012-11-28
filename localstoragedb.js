@@ -124,7 +124,7 @@ function localStorageDB(db_name, engine) {
 			if( !db.data[table_name].hasOwnProperty(ID) ) {
 				continue;
 			}
-			
+
 			row = db.data[table_name][ID];
 			exists = true;
 
@@ -391,7 +391,7 @@ function localStorageDB(db_name, engine) {
 		},
 
 		// insert or update based on a given condition
-		insertOrUpdate: function(table_name, data, query) {
+		insertOrUpdate: function(table_name, query, data) {
 			tableExistsWarn(table_name);
 
 			var result_ids = [];
