@@ -253,7 +253,7 @@ lib.commit(); // commit the deletions to localStorage
 		</tr>
 			<tr>
 				<td>insertOrUpdate()</td>
-				<td>table_name, query, data</td>
+				<td>table_name, data, query</td>
 				<td>Inserts a row into a table if the given query matches no results, or updates the rows matching the query.<br />
 					- query is either an object literal, function, or null.<br />
 					- data is an object literal with field-values
@@ -270,3 +270,4 @@ lib.commit(); // commit the deletions to localStorage
 		</tr>
 	</tbody>
 </table>
+
