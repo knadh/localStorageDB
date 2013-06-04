@@ -1,16 +1,19 @@
 # localStorageDB 1.9
-### a simple, tiny database layer for localStorage, sessionStorage
-Kailash Nadh
+localStorageDB is a simple layer over localStorage (and sessionStorage) that provides 
+a set of functions to store structured data like databases and  
+tables. It provides basic insert/update/delete/query capabilities.
+localStorageDB has no dependencies, and is not based on WebSQL. Underneath it all, 
+the structured data is stored as serialized JSON in localStorage or sessionStorage.
 
-Documentation: http://kailashnadh.name/code/localstoragedb
-Licensed under the MIT license.
-
-v 1.9 November 2012
+- Kailash Nadh
+- v 1.9 November 2012
+- Documentation: [http://nadh.in/code/localstoragedb](http://nadh.in/code/localstoragedb)
+- Licensed: MIT license
 
 # Usage / Examples
 ### Creating a database, table, and populating the table
 
-<pre>
+```javascript
 // Initialise. If the database doesn't exist, it is created
 var lib = new localStorageDB("library", localStorage);
 
@@ -34,11 +37,11 @@ if( lib.isNew() ) {
 	// all create/drop/insert/update/delete operations should be committed
 	lib.commit();
 }
-</pre>
+```
 
 
 ### Querying
-<pre>
+```javascript
 // simple select queries
 lib.query("books", {year: 2011});
 lib.query("books", {year: 1999, author: "Norretranders"});
@@ -63,10 +66,10 @@ lib.query("books", function(row) {
 		return false;
 	}
 });
-</pre>
+```
 
 ### Example results from a query
-<pre>
+```javascript
 // query results are returned as arrays of object literals
 // an ID field with the internal auto-incremented id of the row is also included
 // thus, ID is a reserved field name
@@ -93,11 +96,11 @@ lib.query("books", {author: "ramachandran"});
  }
 ]
 */
-</pre>
+```
 
 
 ### Updating
-<pre>
+```javascript
 // change the title of books published in 1999 to "Unknown"
 lib.update("books", {year: 1999}, function(row) {
 	row.title = "Unknown";
@@ -120,20 +123,20 @@ lib.update("books",
 		return row;
 	}
 );
-</pre>
+```
 
 ### Insert or Update conditionally
-<pre>
+```javascript
 // if there's a book with code B003, update it, or insert it as a new row
 lib.insertOrUpdate("books", {code: 'B003'}, {	code: "B003",
 						title: "Freakonomics",
 						author: "Levitt and Dubner",
 						year: 2005,
 						copies: 15});
-</pre>
+```
 
 ### Deleting
-<pre>
+```javascript
 // delete all books published in 1999
 lib.deleteRows("books", {year: 1999});
 
@@ -147,7 +150,7 @@ lib.deleteRows("books", function(row) {
 });
 
 lib.commit(); // commit the deletions to localStorage
-</pre>
+```
 
 
 # Methods
