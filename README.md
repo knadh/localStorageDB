@@ -1,7 +1,7 @@
 # localStorageDB 1.9
 localStorageDB is a simple layer over localStorage (and sessionStorage) that provides 
-a set of functions to store structured data like databases and  
-tables. It provides basic insert/update/delete/query capabilities.
+a set of functions to store structured data like databases and tables.
+It provides basic insert/update/delete/query capabilities.
 localStorageDB has no dependencies, and is not based on WebSQL. Underneath it all, 
 the structured data is stored as serialized JSON in localStorage or sessionStorage.
 
