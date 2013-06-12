@@ -1,11 +1,12 @@
 /*
-	Kailash Nadh (http://kailashnadh.name)
+	Kailash Nadh (http://nadh.in)
 	
 	localStorageDB
 	September 2011
 	A simple database layer for localStorage
 
 	v 1.9 November 2012
+	v 2.0 June 2013
 
 	License	:	MIT License
 */
@@ -15,8 +16,13 @@ function localStorageDB(db_name, engine) {
 	var db_prefix = 'db_',
 		db_id = db_prefix + db_name,
 		db_new = false,	// this flag determines whether a new database was created during an object initialisation
-		db = null,
-		storage = (engine == sessionStorage ? sessionStorage: localStorage);
+		db = null;
+
+		try {
+			var storage = (engine == sessionStorage ? sessionStorage: localStorage);
+		} catch(e) { // ie8 hack
+			var storage = engine;
+		}
 
 	// if the database doesn't exist, create it
 	db = storage[ db_id ];
