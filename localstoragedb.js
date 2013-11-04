@@ -277,7 +277,7 @@ function localStorageDB(db_name, engine) {
 		for(var i=0; i<db.tables[table_name].fields.length; i++) {
 			field = db.tables[table_name].fields[i];
 			
-			if(data[field]) {
+			if ((data[field] !== null && data[field] !== undefined)) {
 				new_data[field] = data[field];
 			}
 		}
@@ -289,7 +289,7 @@ function localStorageDB(db_name, engine) {
 		var field = '', new_data = {};
 		for(var i=0; i<db.tables[table_name].fields.length; i++) {
 			field = db.tables[table_name].fields[i];
-			new_data[field] = data[field] ? data[field] : null;
+			new_data[field] = (data[field] === null || data[field] === undefined) ? null : data[field];
 		}
 		return new_data;
 	}
