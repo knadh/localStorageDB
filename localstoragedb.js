@@ -70,6 +70,20 @@ function localStorageDB(db_name, engine) {
 			error("The table '" + table_name + "' does not exist.");
 		}
 	}
+
+	// check whether a table column exists
+	function columnExists(table_name, field_name) {
+		var exists = false;
+		var table_fields = db.tables[table_name].fields;
+		for(var field in table_fields){
+			if(table_fields[field] == field_name)
+			{
+				exists = true;
+				break;
+			}
+		}
+		return exists;
+	}
 		
 	// create a table
 	function createTable(table_name, fields) {
@@ -87,6 +101,29 @@ function localStorageDB(db_name, engine) {
 	function truncate(table_name) {
 		db.tables[table_name].auto_increment = 1;
 		db.data[table_name] = {};
+	}
+
+	//alter a table
+	function alterTable(table_name, new_fields, default_values){
+		db.tables[table_name].fields = db.tables[table_name].fields.concat(new_fields);
+
+		// insert default values in existing table
+		if(typeof default_values != "undefined")
+		{
+			// loop through all the records in the table
+			for(var ID in db.data[table_name]) {
+				if( !db.data[table_name].hasOwnProperty(ID) ) {
+					continue;
+				}
+				for(var field in new_fields)
+				{
+					if(typeof default_values == "object")
+						db.data[table_name][ID][new_fields[field]] = default_values[new_fields[field]];
+					else
+						db.data[table_name][ID][new_fields[field]] = default_values;
+				}
+			}
+		}	
 	}
 	
 	// number of rows in a table
@@ -328,6 +365,10 @@ function localStorageDB(db_name, engine) {
 		tableCount: function() {
 			return tableCount();
 		},
+
+		columnExists: function(table_name, field_name){
+			return columnExists(table_name, field_name);
+		}
 		
 		// create a table
 		createTable: function(table_name, fields) {
@@ -382,6 +423,64 @@ function localStorageDB(db_name, engine) {
 		truncate: function(table_name) {
 			tableExistsWarn(table_name);
 			truncate(table_name);
+		},
+
+		// alter a table		
+		alterTable: function(table_name, new_fields, default_values)
+		{
+			var result = false;
+			if(!validateName(table_name)) {
+				error("The database name '" + table_name + "'" + " contains invalid characters.");
+			} else {
+				if(typeof new_fields == "object")
+				{
+				
+					// make sure field names are valid
+					var is_valid = true;
+					for(var i=0; i<new_fields.length; i++) {
+						if(!validateName(new_fields[i])) {
+							is_valid = false;
+							break;
+						}
+					}
+					
+					if(is_valid) {
+						// cannot use indexOf due to <IE9 incompatibility
+						// de-duplicate the field list
+						var fields_literal = {};
+						for(var i=0; i<new_fields.length; i++) {
+							fields_literal[ new_fields[i] ] = true;
+						}
+						delete fields_literal['ID']; // ID is a reserved field name
+	
+						new_fields = [];
+						for(var field in fields_literal) {
+							if( fields_literal.hasOwnProperty(field) ) {
+								new_fields.push(field);
+							}
+						}
+	
+						alterTable(table_name, new_fields, default_values);
+						result = true;
+					} else {
+						error("One or more field names in the table definition contains invalid characters.");
+					}
+				}
+				else if(typeof new_fields == "string")
+				{
+					if(validateName(new_fields)) {
+						var new_fields_array = [];
+						new_fields_array.push(new_fields);
+						alterTable(table_name, new_fields_array, default_values);
+						result = true;
+					}
+					else{
+						error("One or more field names in the table definition contains invalid characters.");
+					}
+				}
+			}
+
+			return result;
 		},
 		
 		// number of rows in a table
