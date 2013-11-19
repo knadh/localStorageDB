@@ -1,4 +1,4 @@
-# localStorageDB 2.0
+# localStorageDB 2.1
 localStorageDB is a simple layer over localStorage (and sessionStorage) that provides 
 a set of functions to store structured data like databases and tables.
 It provides basic insert/update/delete/query capabilities.
@@ -8,6 +8,7 @@ the structured data is stored as serialized JSON in localStorage or sessionStora
 - Kailash Nadh
 - v 1.9 November 2012
 - v 2.0 June 2013
+- v 2.1 November 2013
 - Documentation: [http://nadh.in/code/localstoragedb](http://nadh.in/code/localstoragedb)
 - Licensed: MIT license
 

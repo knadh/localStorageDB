@@ -7,6 +7,7 @@
 
 	v 1.9 November 2012
 	v 2.0 June 2013
+	v 2.1 Nov 2013
 
 	License	:	MIT License
 */
