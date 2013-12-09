@@ -1,4 +1,4 @@
-# localStorageDB 2.0
+# localStorageDB 2.1
 localStorageDB is a simple layer over localStorage (and sessionStorage) that provides 
 a set of functions to store structured data like databases and tables.
 It provides basic insert/update/delete/query capabilities.
@@ -8,6 +8,7 @@ the structured data is stored as serialized JSON in localStorage or sessionStora
 - Kailash Nadh
 - v 1.9 November 2012
 - v 2.0 June 2013
+- v 2.1 November 2013
 - Documentation: [http://nadh.in/code/localstoragedb](http://nadh.in/code/localstoragedb)
 - Licensed: MIT license
 
@@ -40,6 +41,20 @@ if( lib.isNew() ) {
 }
 ```
 
+### Altering
+```javascript
+// If database already exists, and want to alter existing tables
+if(! (lib.columnExists("books", "publication")) ) {
+	lib.alterTable("books", "publication", "McGraw-Hill Education");
+	lib.commit(); // commit the deletions to localStorage
+}
+
+// Multiple columns can also added at once
+if(! (lib.columnExists("books", "publication") && lib.columnExists("books", "ISBN")) ) {
+	lib.alterTable("books", ["publication", "ISBN"], {publication: "McGraw-Hill Education", ISBN: "85-359-0277-5"});
+	lib.commit(); // commit the deletions to localStorage
+}
+```
 
 ### Querying
 ```javascript
@@ -211,6 +226,14 @@ lib.commit(); // commit the deletions to localStorage
 			</td>
 		</tr>
 		<tr>
+			<td>alterTable()</td>
+			<td>table_name, new_fields, default_values</td>
+			<td>Alter a table<br />
+				- new_fields can be a array of columns OR a string of single column.<br />
+				- default_values (optional) can be a object of column's default values OR a default value string for single column for existing rows.
+			</td>
+		</tr>
+		<tr>
 			<td>dropTable()</td>
 			<td>table_name</td>
 			<td>Deletes a table from the database</td>
@@ -219,6 +242,16 @@ lib.commit(); // commit the deletions to localStorage
 			<td>truncate()</td>
 			<td>table_name</td>
 			<td>Empties all records in a table and resets the internal auto increment ID to 0</td>
+		</tr>
+		<tr>
+			<td>columnExists()</td>
+			<td>table_name, field_name</td>
+			<td>Checks whether a column exists in database table.</td>
+		</tr>
+		<tr>
+			<td>tableExists()</td>
+			<td>table_name</td>
+			<td>Checks whether a table exists in the database</td>
 		</tr>
 		<tr>
 			<td>rowCount()</td>
