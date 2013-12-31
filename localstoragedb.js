@@ -369,7 +369,7 @@ function localStorageDB(db_name, engine) {
 
 		columnExists: function(table_name, field_name){
 			return columnExists(table_name, field_name);
-		}
+		},
 		
 		// create a table
 		createTable: function(table_name, fields) {
