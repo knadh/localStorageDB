@@ -279,7 +279,12 @@ function localStorageDB(db_name, engine) {
 
 	// commit the database to localStorage
 	function commit() {
-		storage[db_id] = JSON.stringify(db);
+		try {
+			storage[db_id] = JSON.stringify(db);
+			return true;
+		} catch(e) {
+			return false;
+		}
 	}
 	
 	// serialize the database
@@ -339,7 +344,7 @@ function localStorageDB(db_name, engine) {
 	return {
 		// commit the database to localStorage
 		commit: function() {
-			commit();
+			return commit();
 		},
 		
 		// is this instance a newly created database?

@@ -204,7 +204,7 @@ lib.commit(); // commit the deletions to localStorage
 		<tr>
 			<td>commit()</td>
 			<td></td>
-			<td>Commits the database to localStorage</td>
+			<td>Commits the database to localStorage. Returns true if successful, and false otherwise (highly unlikely)</td>
 		</tr>
 		<tr>
 			<td>serialize()</td>
