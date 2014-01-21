@@ -8,6 +8,7 @@
 	v 1.9 November 2012
 	v 2.0 June 2013
 	v 2.1 Nov 2013
+	v 2.2 Jan 2014
 
 	License	:	MIT License
 */
@@ -91,7 +92,7 @@ function localStorageDB(db_name, engine) {
 		db.tables[table_name] = {fields: fields, auto_increment: 1};
 		db.data[table_name] = {};
 	}
-	
+
 	// drop a table
 	function dropTable(table_name) {
 		delete db.tables[table_name];
@@ -419,20 +420,23 @@ function localStorageDB(db_name, engine) {
 			return result;
 		},
 		
-		// Create a table using List of Objects @ [{k:v,k:v},{k:v,k:v},etc]
+		// Create a table using array of Objects @ [{k:v,k:v},{k:v,k:v},etc]
 		createTableWithData: function(table_name, data) {
-			if(typeof data !== 'object')
-				error("Data supplied isn't in object form. Example: [{k:v,k:v},{k:v,k:v},etc]");
+			if(typeof data !== 'object' || !data.length || data.length < 1) {
+				error("Data supplied isn't in object form. Example: [{k:v,k:v},{k:v,k:v} ..]");
+			}
 
-			fields = Object.keys(data['0']);
+			var fields = Object.keys(data[0]);
 			
-			if( this.createTable(table_name,fields) )
-			{
+			// create the table
+			if( this.createTable(table_name, fields) ) {
 				this.commit();
-				for (var i=0;i<data.length;i++)
-				{
-					if(!insert(table_name,data[i]))
+
+				// populate
+				for (var i=0; i<data.length; i++) {
+					if( !insert(table_name, data[i]) ) {
 						error("Failed to insert record: ["+JSON.stringify(data[i])+"]");
+					}
 				}
 				this.commit();
 			}
