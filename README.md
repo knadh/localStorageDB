@@ -9,7 +9,7 @@ the structured data is stored as serialized JSON in localStorage or sessionStora
 - v 1.9 November 2012
 - v 2.0 June 2013
 - v 2.1 November 2013
-- v 2.2 January 2014
+- v 2.2 January 2014 Contribution: Andy Hawkins (http://a904guy.com)
 - Documentation: [http://nadh.in/code/localstoragedb](http://nadh.in/code/localstoragedb)
 - Licensed: MIT license
 
