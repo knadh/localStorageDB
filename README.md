@@ -1,4 +1,4 @@
-# localStorageDB 2.1
+# localStorageDB 2.2
 localStorageDB is a simple layer over localStorage (and sessionStorage) that provides 
 a set of functions to store structured data like databases and tables.
 It provides basic insert/update/delete/query capabilities.
@@ -9,6 +9,7 @@ the structured data is stored as serialized JSON in localStorage or sessionStora
 - v 1.9 November 2012
 - v 2.0 June 2013
 - v 2.1 November 2013
+- v 2.2 January 2014
 - Documentation: [http://nadh.in/code/localstoragedb](http://nadh.in/code/localstoragedb)
 - Licensed: MIT license
 
@@ -41,6 +42,25 @@ if( lib.isNew() ) {
 }
 ```
 
+### Creating and populating a table in one go
+```
+	// rows for pre-population
+	var rows = [
+		{code: "B001", title: "Phantoms in the brain", author: "Ramachandran", year: 1999, copies: 10},
+		{code: "B002", title: "The tell-tale brain", author: "Ramachandran", year: 2011, copies: 10},
+		{code: "B003", title: "Freakonomics", author: "Levitt and Dubner", year: 2005, copies: 10},
+		{code: "B004", title: "Predictably irrational", author: "Ariely", year: 2008, copies: 10},
+		{code: "B005", title: "Tesla: Man out of time", author: "Cheney", year: 2001, copies: 10},
+		{code: "B006", title: "Salmon fishing in the Yemen", author: "Torday", year: 2007, copies: 10},
+		{code: "B007", title: "The user illusion", author: "Norretranders", year: 1999, copies: 10},
+		{code: "B008", title: "Hubble: Window of the universe", author: "Sparrow", year: 2010, copies: 10}
+	];
+
+	// create the table and insert records in one go
+	lib.createTableWithData("books", rows);
+
+	lib.commit();
+```
 ### Altering
 ```javascript
 // If database already exists, and want to alter existing tables
@@ -223,6 +243,14 @@ lib.commit(); // commit the deletions to localStorage
 			<td>table_name, fields</td>
 			<td>Creates a table<br />
 				- fields is an array of string fieldnames. 'ID' is a reserved fieldname.
+			</td>
+		</tr>
+		<tr>
+			<td>createTableWithData()</td>
+			<td>table_name, rows</td>
+			<td>Creates a table and populates it<br />
+				- rows is an array of object literals where each object represents a record<br />
+				[{field1: val, field2: val}, {field1: val, field2: val}]
 			</td>
 		</tr>
 		<tr>
