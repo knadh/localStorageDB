@@ -8,7 +8,7 @@
 	v 1.9 November 2012
 	v 2.0 June 2013
 	v 2.1 Nov 2013
-	v 2.2 Jan 2014
+	v 2.2 Jan 2014 Contribution: Andy Hawkins (http://a904guy.com) 
 
 	License	:	MIT License
 */
@@ -61,6 +61,11 @@ function localStorageDB(db_name, engine) {
 
 	// _________ table functions
 	
+	// returns all fields in a table.
+	function tableKeys(table_name) {
+		return db.tables[table_name].fields;
+	}
+
 	// check whether a table exists
 	function tableExists(table_name) {
 		return db.tables[table_name] ? true : false;
@@ -159,10 +164,11 @@ function localStorageDB(db_name, engine) {
 	}
 	
 	// select rows in a table by field-value pairs, returns the IDs of matches
-	function queryByValues(table_name, data, limit) {
+	function queryByValues(table_name, data, limit, start) {
 		var result_ids = [],
 			exists = false,
 			row = null;
+			start_n = 0;
 
 		// loop through all the records in the table, looking for matches
 		for(var ID in db.data[table_name]) {
@@ -191,6 +197,10 @@ function localStorageDB(db_name, engine) {
 				}
 			}
 			if(exists) {
+				if(typeof start === 'number' && start_n<start) {
+					++start_n;
+					continue;
+				}
 				result_ids.push(ID);
 			}
 			if(result_ids.length == limit) {
@@ -201,10 +211,11 @@ function localStorageDB(db_name, engine) {
 	}
 	
 	// select rows in a table by a function, returns the IDs of matches
-	function queryByFunction(table_name, query_function, limit) {
+	function queryByFunction(table_name, query_function, limit, start) {
 		var result_ids = [],
 			exists = false,
-			row = null;
+			row = null,
+			start_n = 0;
 
 		// loop through all the records in the table, looking for matches
 		for(var ID in db.data[table_name]) {
@@ -215,6 +226,12 @@ function localStorageDB(db_name, engine) {
 			row = db.data[table_name][ID];
 
 			if( query_function( clone(row) ) == true ) {	// it's a match if the supplied conditional function is satisfied
+
+				if(typeof start === 'number' && start_n<start) {
+					start_n++;
+					continue;
+				}
+
 				result_ids.push(ID);
 			}
 			if(result_ids.length == limit) {
@@ -225,10 +242,17 @@ function localStorageDB(db_name, engine) {
 	}
 	
 	// return all the IDs in a table
-	function getIDs(table_name, limit) {
-		var result_ids = [];
+	function getIDs(table_name, limit, start) {
+		var result_ids = [],
+			start_n = 0;
 		for(var ID in db.data[table_name]) {
 			if( db.data[table_name].hasOwnProperty(ID) ) {
+
+				if(typeof start === 'number' && start_n<start) {
+					start_n++;
+					continue;
+				}
+
 				result_ids.push(ID);
 
 				if(result_ids.length == limit) {
@@ -311,7 +335,9 @@ function localStorageDB(db_name, engine) {
 	
 	// validate db, table, field names (alpha-numeric only)
 	function validateName(name) {
-		return name.match(/[^a-z_0-9]/ig) ? false : true;
+		if(typeof String(name).match == 'function')
+			return String(name).match(/[^\w\d\s]/ig) ? false : true;
+		return false
 	}
 	
 	// given a data list, only retain valid fields in a table
@@ -366,6 +392,10 @@ function localStorageDB(db_name, engine) {
 		// check whether a table exists
 		tableExists: function(table_name) {
 			return tableExists(table_name);
+		},
+
+		tableKeys: function(table_name) {
+			return tableKeys(table_name);
 		},
 		
 		// number of tables in the database
@@ -570,16 +600,16 @@ function localStorageDB(db_name, engine) {
 		},
 
 		// select rows
-		query: function(table_name, query, limit) {
+		query: function(table_name, query, limit, start) {
 			tableExistsWarn(table_name);
 			
 			var result_ids = [];
 			if(!query) {
-				result_ids = getIDs(table_name, limit); // no conditions given, return all records
+				result_ids = getIDs(table_name, limit, start); // no conditions given, return all records
 			} else if(typeof query == 'object') {			// the query has key-value pairs provided
-				result_ids = queryByValues(table_name, validFields(table_name, query), limit);
+				result_ids = queryByValues(table_name, validFields(table_name, query), limit, start);
 			} else if(typeof query == 'function') {		// the query has a conditional map function provided
-				result_ids = queryByFunction(table_name, query, limit);
+				result_ids = queryByFunction(table_name, query, limit, start);
 			}
 			return select(table_name, result_ids, limit);
 		},
