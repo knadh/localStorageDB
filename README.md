@@ -239,6 +239,11 @@ lib.commit(); // commit the deletions to localStorage
 			<td>Checks whether a table exists in the database</td>
 		</tr>
 		<tr>
+			<td>tableKeys()</td>
+			<td>table_name</td>
+			<td>Returns all the field names of 'table_name'</td>
+		</tr>
+		<tr>
 			<td>createTable()</td>
 			<td>table_name, fields</td>
 			<td>Creates a table<br />
@@ -277,11 +282,6 @@ lib.commit(); // commit the deletions to localStorage
 			<td>Checks whether a column exists in database table.</td>
 		</tr>
 		<tr>
-			<td>tableExists()</td>
-			<td>table_name</td>
-			<td>Checks whether a table exists in the database</td>
-		</tr>
-		<tr>
 			<td>rowCount()</td>
 			<td>table_name</td>
 			<td>Returns the number of rows in a table</td>
@@ -298,11 +298,12 @@ lib.commit(); // commit the deletions to localStorage
 		</tr>
 		<tr>
 			<td>query()</td>
-			<td>table_name, query, limit</td>
+			<td>table_name, query, limit, start</td>
 			<td>
 				Returns an array of rows (object literals) from a table matching the query.<br />
 				- query is either an object literal or null. If query is not supplied, all rows are returned<br />
 				- limit is the maximum number of rows to be returned<br />
+				- start is the  number of rows to be skipped before collecting results to be returned<br />
 				Every returned row will have it's internal auto-incremented id assigned to the variable ID</td>
 		</tr>
 		<tr>
