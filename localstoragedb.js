@@ -61,7 +61,7 @@ function localStorageDB(db_name, engine) {
 
 	// _________ table functions
 	
-	// number of tables in the database
+	// returns all fields in a table.
 	function tableKeys(table_name) {
 		return db.tables[table_name].fields;
 	}
