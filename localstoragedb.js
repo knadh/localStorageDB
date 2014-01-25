@@ -62,7 +62,7 @@ function localStorageDB(db_name, engine) {
 	// _________ table functions
 	
 	// returns all fields in a table.
-	function tableKeys(table_name) {
+	function tableFields(table_name) {
 		return db.tables[table_name].fields;
 	}
 
@@ -197,8 +197,8 @@ function localStorageDB(db_name, engine) {
 				}
 			}
 			if(exists) {
-				if(typeof start === 'number' && start_n<start) {
-					++start_n;
+				if(typeof start === 'number' && start_n < start) {
+					start_n++;
 					continue;
 				}
 				result_ids.push(ID);
@@ -226,12 +226,10 @@ function localStorageDB(db_name, engine) {
 			row = db.data[table_name][ID];
 
 			if( query_function( clone(row) ) == true ) {	// it's a match if the supplied conditional function is satisfied
-
-				if(typeof start === 'number' && start_n<start) {
+				if(typeof start === 'number' && start_n < start) {
 					start_n++;
 					continue;
 				}
-
 				result_ids.push(ID);
 			}
 			if(result_ids.length == limit) {
@@ -245,10 +243,10 @@ function localStorageDB(db_name, engine) {
 	function getIDs(table_name, limit, start) {
 		var result_ids = [],
 			start_n = 0;
+
 		for(var ID in db.data[table_name]) {
 			if( db.data[table_name].hasOwnProperty(ID) ) {
-
-				if(typeof start === 'number' && start_n<start) {
+				if(typeof start === 'number' && start_n < start) {
 					start_n++;
 					continue;
 				}
@@ -335,9 +333,7 @@ function localStorageDB(db_name, engine) {
 	
 	// validate db, table, field names (alpha-numeric only)
 	function validateName(name) {
-		if(typeof String(name).match == 'function')
-			return String(name).match(/[^\w\d\s]/ig) ? false : true;
-		return false
+		return name.match(/[^a-z_0-9]/ig) ? false : true;
 	}
 	
 	// given a data list, only retain valid fields in a table
@@ -394,8 +390,9 @@ function localStorageDB(db_name, engine) {
 			return tableExists(table_name);
 		},
 
-		tableKeys: function(table_name) {
-			return tableKeys(table_name);
+		// list of keys in a table
+		tableFields: function(table_name) {
+			return tableFields(table_name);
 		},
 		
 		// number of tables in the database
