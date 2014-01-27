@@ -333,7 +333,7 @@ function localStorageDB(db_name, engine) {
 	
 	// validate db, table, field names (alpha-numeric only)
 	function validateName(name) {
-		return name.match(/[^a-z_0-9]/ig) ? false : true;
+		return name.toString().match(/[^a-z_0-9]/ig) ? false : true;
 	}
 	
 	// given a data list, only retain valid fields in a table
