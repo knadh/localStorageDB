@@ -1,0 +1,10 @@
+v2.2 [27 Jan 2014]
+- Added tableFields()
+- query() now supports a start parameter for offsetting
+- Changed validateName() to accept integer types as field, table, db names
+
+v2.1 [19 Nov 2013]
+- Added alterTable()
+
+v2.0 [12 June 2013]
+- Minor bug fixes including better IE8 compatibility
