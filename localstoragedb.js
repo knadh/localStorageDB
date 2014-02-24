@@ -19,7 +19,7 @@
     function localStorageDB(db_name, engine) {
 
         /**
-         * A native Object.values Method is not available. This is the fastes polyfill I came up with
+         * A native Object.values Method is not available. This is the fastest polyfill I came up with
          * @see http://jsperf.com/localstoragdb
          * @type {{}}
          */
@@ -30,6 +30,19 @@
                 result.push(obj[key]);
             }
             return result;
+        };
+
+        /**
+         * returns true if the given object is an array
+         * @param obj
+         * @returns {boolean}
+         */
+        shims.isArray = function (obj) {
+            try {
+                return (obj instanceof Array);
+            } catch (e) {
+                return false;
+            }
         };
 
         var db_prefix = 'db_',
@@ -177,6 +190,12 @@
             return results;
         }
 
+        /**
+         * Transforms the given obj into an array and sorts it with the native sort function
+         * @param _table_name
+         * @param _sortObj
+         * @returns {*}
+         */
         function sortData(_table_name, _sortObj) {
             var table_data = db.data[_table_name],
                 sortedArray = shims.values(table_data),
@@ -186,11 +205,11 @@
             //sortMode 0 aufsteigend, 1 = absteigend
             sortedArray.sort(function (a, b) {
                 var sort = "";
-                switch (sortMode) {
-                    case 0:
+                switch (sortMode.toLowerCase()) {
+                    case 'desc':
                         sort = (a[sortField] < b[sortField]);
                         break;
-                    case 1:
+                    case 'asc':
                         sort = (a[sortField] > b[sortField]);
                         break;
                 }
@@ -198,22 +217,32 @@
             });
 
             return sortedArray;
-        };
+        }
 
 
-        // select rows in a table by field-value pairs, returns the IDs of matches
+        /**
+         *
+         * @param select rows in a table by field-value pairs, returns the IDs of matches
+         * @param data
+         * @param limit
+         * @param start
+         * @returns {Array}
+         */
         function queryByValues(table_data, data, limit, start) {
             var result_ids = [],
                 exists = false,
                 row = null,
                 start_n = 0,
                 tableData = table_data;
+
             // loop through all the records in the table, looking for matches
             for (var key in tableData) {
+                if(!tableData.hasOwnProperty(key))
+                    continue;
+
                 var ID = tableData[key].ID
                 row = tableData[key];
                 exists = true;
-
                 for (var field in data) {
                     if (!data.hasOwnProperty(field)) {
                         continue;
@@ -255,6 +284,10 @@
 
             // loop through all the records in the table, looking for matches
             for (var key in tableData) {
+
+                if(!tableData.hasOwnProperty(key))
+                    continue;
+
                 var ID = tableData[key].ID
                 row = tableData[key];
                 if (query_function(clone(row)) == true) {	// it's a match if the supplied conditional function is satisfied
@@ -278,6 +311,10 @@
                 tableData = table_data;
 
             for (var key in tableData) {
+
+                if(!tableData.hasOwnProperty(key))
+                    continue;
+
                 var ID = tableData[key].ID
                 if (typeof start === 'number' && start_n < start) {
                     start_n++;
@@ -352,6 +389,7 @@
         }
 
         // clone an object
+        //needed to be sure noone ever edits the actual database object
         function clone(obj) {
             var new_obj = {};
             for (var key in obj) {
@@ -582,14 +620,13 @@
             // insert or update based on a given condition
             insertOrUpdate: function (table_name, query, data) {
                 tableExistsWarn(table_name);
-
                 var result_ids = [];
                 if (!query) {
-                    result_ids = getIDs(table_name);				// there is no query. applies to all records
+                    result_ids = getIDs(db.data[table_name]);				// there is no query. applies to all records
                 } else if (typeof query == 'object') {				// the query has key-value pairs provided
-                    result_ids = queryByValues(table_name, validFields(table_name, query));
+                    result_ids = queryByValues(db.data[table_name], validFields(table_name, query));
                 } else if (typeof query == 'function') {				// the query has a conditional map function provided
-                    result_ids = queryByFunction(table_name, query);
+                    result_ids = queryByFunction(db.data[table_name], query);
                 }
 
                 // no existing records matched, so insert a new row
@@ -611,14 +648,13 @@
             // update rows
             update: function (table_name, query, update_function) {
                 tableExistsWarn(table_name);
-
                 var result_ids = [];
                 if (!query) {
-                    result_ids = getIDs(table_name);				// there is no query. applies to all records
+                    result_ids = getIDs(db.data[table_name]);				// there is no query. applies to all records
                 } else if (typeof query == 'object') {				// the query has key-value pairs provided
-                    result_ids = queryByValues(table_name, validFields(table_name, query));
+                    result_ids = queryByValues(db.data[table_name], validFields(table_name, query));
                 } else if (typeof query == 'function') {				// the query has a conditional map function provided
-                    result_ids = queryByFunction(table_name, query);
+                    result_ids = queryByFunction(db.data[table_name], query);
                 }
                 return update(table_name, result_ids, update_function);
             },
@@ -626,20 +662,22 @@
             // select rows
             query: function (table_name, query, limit, start) {
                 tableExistsWarn(table_name);
-                var tableData = shims.values(db.data[table_name]);
+                var result_ids = [];
                 if (!query) {
-                    result_ids = getIDs(tableData, limit, start); // no conditions given, return all records
+                    result_ids = getIDs(db.data[table_name], limit, start); // no conditions given, return all records
                 } else if (typeof query == 'object') {			// the query has key-value pairs provided
-                    result_ids = queryByValues(tableData, validFields(table_name, query), limit, start);
+                    result_ids = queryByValues(db.data[table_name], validFields(table_name, query), limit, start);
                 } else if (typeof query == 'function') {		// the query has a conditional map function provided
-                    result_ids = queryByFunction(tableData, query, limit, start);
+                    result_ids = queryByFunction(db.data[table_name], query, limit, start);
                 }
-                return select(table_name, result_ids, limit);
+                return select(table_name, result_ids);
             },
-
+            //select rows with sorting. Need to add a new function here to not break the actual API
+            //it would be better not to parse in each param as single ones, but on big object. e.g data:{query:{},limit:0,start:0} etc.
             sortedQuery: function (table_name, query, sortObj, limit, start) {
                 tableExistsWarn(table_name);
                 var sortedTableData = sortData(table_name, sortObj);
+                var result_ids = [];
                 if (!query) {
                     result_ids = getIDs(sortedTableData, limit, start); // no conditions given, return all records
                 } else if (typeof query == 'object') {			// the query has key-value pairs provided
@@ -647,20 +685,19 @@
                 } else if (typeof query == 'function') {		// the query has a conditional map function provided
                     result_ids = queryByFunction(sortedTableData, query, limit, start);
                 }
-                return select(table_name, result_ids, limit);
+                return select(table_name, result_ids);
             },
 
             // delete rows
             deleteRows: function (table_name, query) {
                 tableExistsWarn(table_name);
-                var tableData = shims.values(db.data[table_name]);
                 var result_ids = [];
                 if (!query) {
-                    result_ids = getIDs(tableData);
+                    result_ids = getIDs(db.data[table_name]);
                 } else if (typeof query == 'object') {
-                    result_ids = queryByValues(tableData, validFields(table_name, query));
+                    result_ids = queryByValues(db.data[table_name], validFields(table_name, query));
                 } else if (typeof query == 'function') {
-                    result_ids = queryByFunction(tableData, query);
+                    result_ids = queryByFunction(db.data[table_name], query);
                 }
                 return deleteRows(table_name, result_ids);
             }
