@@ -10,6 +10,7 @@ the structured data is stored as serialized JSON in localStorage or sessionStora
 - v 2.0 June 2013
 - v 2.1 November 2013
 - v 2.2 January 2014 Contribution: Andy Hawkins (http://a904guy.com)
+- v 2.3 February 2014 Contribution: Christian Kellner (http://orange-coding.net)
 - Documentation: [http://nadh.in/code/localstoragedb](http://nadh.in/code/localstoragedb)
 - Licensed: MIT license
 
@@ -103,7 +104,16 @@ lib.query("books", function(row) {
 	}
 });
 ```
-
+### Sorted Querys
+```javascript
+db.sortedQuery("books", function(row){
+    if(row.ID < 20){
+        return true;
+    }else{
+        return false;
+    }
+},{mode:'asc',field:"author"});
+```
 ### Example results from a query
 ```javascript
 // query results are returned as arrays of object literals
@@ -306,6 +316,19 @@ lib.commit(); // commit the deletions to localStorage
 				- start is the  number of rows to be skipped from the beginning (offset)<br />
 				Every returned row will have it's internal auto-incremented id assigned to the variable ID</td>
 		</tr>
+        
+        <tr>
+			<td>sortedQuery()</td>
+			<td>table_name, query, sortObj, limit, start</td>
+			<td>
+				Returns an array of sorted rows (object literals) from a table matching the query.<br />
+				- query is either an object literal or null. If query is not supplied, all rows are returned<br />
+                - sortObj is an object literal. It must contain an attribute "mode" and "field". "mode" : "asc / desc", "field" must contain the fieldName which is used for sorting
+				- limit is the maximum number of rows to be returned<br />
+				- start is the  number of rows to be skipped from the beginning (offset)<br />
+				Every returned row will have it's internal auto-incremented id assigned to the variable ID</td>
+		</tr>
+        
 		<tr>
 			<td>update()</td>
 			<td>table_name, query, update_function</td>
