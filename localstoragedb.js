@@ -51,15 +51,15 @@
             db = null;
 
         try {
-            var storage = (engine == sessionStorage ? sessionStorage : localStorage);
-        } catch (e) { // ie8 hack
+            var storage = (engine == sessionStorage ? sessionStorage: localStorage);
+        } catch(e) { // ie8 hack
             var storage = engine;
         }
 
         // if the database doesn't exist, create it
         db = storage[ db_id ];
-        if (!( db && (db = JSON.parse(db)) && db.tables && db.data )) {
-            if (!validateName(db_name)) {
+        if( !( db && (db = JSON.parse(db)) && db.tables && db.data ) ) {
+            if(!validateName(db_name)) {
                 error("The name '" + db_name + "'" + " contains invalid characters.");
             } else {
                 db = {tables: {}, data: {}};
@@ -81,8 +81,8 @@
         // number of tables in the database
         function tableCount() {
             var count = 0;
-            for (var table in db.tables) {
-                if (db.tables.hasOwnProperty(table)) {
+            for(var table in db.tables) {
+                if( db.tables.hasOwnProperty(table) ) {
                     count++;
                 }
             }
@@ -103,7 +103,7 @@
 
         // check whether a table exists, and if not, throw an error
         function tableExistsWarn(table_name) {
-            if (!tableExists(table_name)) {
+            if(!tableExists(table_name)) {
                 error("The table '" + table_name + "' does not exist.");
             }
         }
@@ -112,8 +112,9 @@
         function columnExists(table_name, field_name) {
             var exists = false;
             var table_fields = db.tables[table_name].fields;
-            for (var field in table_fields) {
-                if (table_fields[field] == field_name) {
+            for(var field in table_fields){
+                if(table_fields[field] == field_name)
+                {
                     exists = true;
                     break;
                 }
@@ -140,18 +141,20 @@
         }
 
         //alter a table
-        function alterTable(table_name, new_fields, default_values) {
+        function alterTable(table_name, new_fields, default_values){
             db.tables[table_name].fields = db.tables[table_name].fields.concat(new_fields);
 
             // insert default values in existing table
-            if (typeof default_values != "undefined") {
+            if(typeof default_values != "undefined")
+            {
                 // loop through all the records in the table
-                for (var ID in db.data[table_name]) {
-                    if (!db.data[table_name].hasOwnProperty(ID)) {
+                for(var ID in db.data[table_name]) {
+                    if( !db.data[table_name].hasOwnProperty(ID) ) {
                         continue;
                     }
-                    for (var field in new_fields) {
-                        if (typeof default_values == "object")
+                    for(var field in new_fields)
+                    {
+                        if(typeof default_values == "object")
                             db.data[table_name][ID][new_fields[field]] = default_values[new_fields[field]];
                         else
                             db.data[table_name][ID][new_fields[field]] = default_values;
@@ -163,8 +166,8 @@
         // number of rows in a table
         function rowCount(table_name) {
             var count = 0;
-            for (var ID in db.data[table_name]) {
-                if (db.data[table_name].hasOwnProperty(ID)) {
+            for(var ID in db.data[table_name]) {
+                if( db.data[table_name].hasOwnProperty(ID) ) {
                     count++;
                 }
             }
@@ -182,10 +185,10 @@
         // select rows, given a list of IDs of rows in a table
         function select(table_name, ids) {
             var ID = null, results = [], row = null;
-            for (var i = 0; i < ids.length; i++) {
+            for(var i=0; i<ids.length; i++) {
                 ID = ids[i];
                 row = db.data[table_name][ID];
-                results.push(clone(row));
+                results.push( clone(row) );
             }
             return results;
         }
@@ -240,34 +243,36 @@
                 if(!tableData.hasOwnProperty(key))
                     continue;
 
+
                 var ID = tableData[key].ID
                 row = tableData[key];
                 exists = true;
-                for (var field in data) {
-                    if (!data.hasOwnProperty(field)) {
+
+                for(var field in data) {
+                    if( !data.hasOwnProperty(field) ) {
                         continue;
                     }
 
-                    if (typeof data[field] == 'string') {	// if the field is a string, do a case insensitive comparison
-                        if (row[field].toString().toLowerCase() != data[field].toString().toLowerCase()) {
+                    if(typeof data[field] == 'string') {	// if the field is a string, do a case insensitive comparison
+                        if( row[field].toString().toLowerCase() != data[field].toString().toLowerCase() ) {
                             exists = false;
                             break;
                         }
                     } else {
-                        if (row[field] != data[field]) {
+                        if( row[field] != data[field] ) {
                             exists = false;
                             break;
                         }
                     }
                 }
-                if (exists) {
-                    if (typeof start === 'number' && start_n < start) {
+                if(exists) {
+                    if(typeof start === 'number' && start_n < start) {
                         start_n++;
                         continue;
                     }
                     result_ids.push(ID);
                 }
-                if (result_ids.length == limit) {
+                if(result_ids.length == limit) {
                     break;
                 }
             }
@@ -290,14 +295,14 @@
 
                 var ID = tableData[key].ID
                 row = tableData[key];
-                if (query_function(clone(row)) == true) {	// it's a match if the supplied conditional function is satisfied
-                    if (typeof start === 'number' && start_n < start) {
+                if( query_function( clone(row) ) == true ) {	// it's a match if the supplied conditional function is satisfied
+                    if(typeof start === 'number' && start_n < start) {
                         start_n++;
                         continue;
                     }
                     result_ids.push(ID);
                 }
-                if (result_ids.length == limit) {
+                if(result_ids.length == limit) {
                     break;
                 }
             }
@@ -316,24 +321,25 @@
                     continue;
 
                 var ID = tableData[key].ID
-                if (typeof start === 'number' && start_n < start) {
+                if(typeof start === 'number' && start_n < start) {
                     start_n++;
                     continue;
                 }
 
                 result_ids.push(ID);
 
-                if (result_ids.length == limit) {
+                if(result_ids.length == limit) {
                     break;
                 }
             }
+
             return result_ids;
         }
 
         // delete rows, given a list of their IDs in a table
         function deleteRows(table_name, ids) {
-            for (var i = 0; i < ids.length; i++) {
-                if (db.data[table_name].hasOwnProperty(ids[i])) {
+            for(var i=0; i<ids.length; i++) {
+                if( db.data[table_name].hasOwnProperty(ids[i]) ) {
                     delete db.data[table_name][ ids[i] ];
                 }
             }
@@ -344,18 +350,18 @@
         function update(table_name, ids, update_function) {
             var ID = '', num = 0;
 
-            for (var i = 0; i < ids.length; i++) {
+            for(var i=0; i<ids.length; i++) {
                 ID = ids[i];
 
-                var updated_data = update_function(clone(db.data[table_name][ID]));
+                var updated_data = update_function( clone(db.data[table_name][ID]) );
 
-                if (updated_data) {
+                if(updated_data) {
                     delete updated_data['ID']; // no updates possible to ID
 
                     var new_data = db.data[table_name][ID];
                     // merge updated data with existing data
-                    for (var field in updated_data) {
-                        if (updated_data.hasOwnProperty(field)) {
+                    for(var field in updated_data) {
+                        if( updated_data.hasOwnProperty(field) ) {
                             new_data[field] = updated_data[field];
                         }
                     }
@@ -368,12 +374,13 @@
         }
 
 
+
         // commit the database to localStorage
         function commit() {
             try {
                 storage[db_id] = JSON.stringify(db);
                 return true;
-            } catch (e) {
+            } catch(e) {
                 return false;
             }
         }
@@ -392,8 +399,8 @@
         //needed to be sure noone ever edits the actual database object
         function clone(obj) {
             var new_obj = {};
-            for (var key in obj) {
-                if (obj.hasOwnProperty(key)) {
+            for(var key in obj) {
+                if( obj.hasOwnProperty(key) ) {
                     new_obj[key] = obj[key];
                 }
             }
@@ -409,7 +416,7 @@
         function validFields(table_name, data) {
             var field = '', new_data = {};
 
-            for (var i = 0; i < db.tables[table_name].fields.length; i++) {
+            for(var i=0; i<db.tables[table_name].fields.length; i++) {
                 field = db.tables[table_name].fields[i];
 
                 if ((data[field] !== null && data[field] !== undefined)) {
@@ -422,7 +429,7 @@
         // given a data list, populate with valid field names of a table
         function validateData(table_name, data) {
             var field = '', new_data = {};
-            for (var i = 0; i < db.tables[table_name].fields.length; i++) {
+            for(var i=0; i<db.tables[table_name].fields.length; i++) {
                 field = db.tables[table_name].fields[i];
                 new_data[field] = (data[field] === null || data[field] === undefined) ? null : data[field];
             }
@@ -430,77 +437,78 @@
         }
 
 
+
         // ______________________ public methods
 
         return {
             // commit the database to localStorage
-            commit: function () {
+            commit: function() {
                 return commit();
             },
 
             // is this instance a newly created database?
-            isNew: function () {
+            isNew: function() {
                 return db_new;
             },
 
             // delete the database
-            drop: function () {
+            drop: function() {
                 drop();
             },
 
             // serialize the database
-            serialize: function () {
+            serialize: function() {
                 return serialize();
             },
 
             // check whether a table exists
-            tableExists: function (table_name) {
+            tableExists: function(table_name) {
                 return tableExists(table_name);
             },
 
             // list of keys in a table
-            tableFields: function (table_name) {
+            tableFields: function(table_name) {
                 return tableFields(table_name);
             },
 
             // number of tables in the database
-            tableCount: function () {
+            tableCount: function() {
                 return tableCount();
             },
 
-            columnExists: function (table_name, field_name) {
+            columnExists: function(table_name, field_name){
                 return columnExists(table_name, field_name);
             },
 
             // create a table
-            createTable: function (table_name, fields) {
+            createTable: function(table_name, fields) {
                 var result = false;
-                if (!validateName(table_name)) {
+                if(!validateName(table_name)) {
                     error("The database name '" + table_name + "'" + " contains invalid characters.");
-                } else if (this.tableExists(table_name)) {
+                } else if(this.tableExists(table_name)) {
                     error("The table name '" + table_name + "' already exists.");
                 } else {
                     // make sure field names are valid
                     var is_valid = true;
-                    for (var i = 0; i < fields.length; i++) {
-                        if (!validateName(fields[i])) {
+                    for(var i=0; i<fields.length; i++) {
+                        if(!validateName(fields[i])) {
                             is_valid = false;
                             break;
                         }
                     }
 
-                    if (is_valid) {
+                    if(is_valid) {
                         // cannot use indexOf due to <IE9 incompatibility
                         // de-duplicate the field list
                         var fields_literal = {};
-                        for (var i = 0; i < fields.length; i++) {
+                        for(var i=0; i<fields.length; i++) {
                             fields_literal[ fields[i] ] = true;
                         }
                         delete fields_literal['ID']; // ID is a reserved field name
 
                         fields = ['ID'];
-                        for (var field in fields_literal) {
-                            if (fields_literal.hasOwnProperty(field)) {
+                        for(var field in fields_literal) {
+                            if( fields_literal.hasOwnProperty(field) ) {
                                 fields.push(field);
                             }
                         }
@@ -516,21 +524,21 @@
             },
 
             // Create a table using array of Objects @ [{k:v,k:v},{k:v,k:v},etc]
-            createTableWithData: function (table_name, data) {
-                if (typeof data !== 'object' || !data.length || data.length < 1) {
+            createTableWithData: function(table_name, data) {
+                if(typeof data !== 'object' || !data.length || data.length < 1) {
                     error("Data supplied isn't in object form. Example: [{k:v,k:v},{k:v,k:v} ..]");
                 }
 
                 var fields = Object.keys(data[0]);
 
                 // create the table
-                if (this.createTable(table_name, fields)) {
+                if( this.createTable(table_name, fields) ) {
                     this.commit();
 
                     // populate
-                    for (var i = 0; i < data.length; i++) {
-                        if (!insert(table_name, data[i])) {
-                            error("Failed to insert record: [" + JSON.stringify(data[i]) + "]");
+                    for (var i=0; i<data.length; i++) {
+                        if( !insert(table_name, data[i]) ) {
+                            error("Failed to insert record: ["+JSON.stringify(data[i])+"]");
                         }
                     }
                     this.commit();
@@ -539,13 +547,13 @@
             },
 
             // drop a table
-            dropTable: function (table_name) {
+            dropTable: function(table_name) {
                 tableExistsWarn(table_name);
                 dropTable(table_name);
             },
 
             // empty a table
-            truncate: function (table_name) {
+            truncate: function(table_name) {
                 tableExistsWarn(table_name);
                 truncate(table_name);
             },
@@ -553,32 +561,32 @@
             // alter a table
             alterTable: function (table_name, new_fields, default_values) {
                 var result = false;
-                if (!validateName(table_name)) {
+                if(!validateName(table_name)) {
                     error("The database name '" + table_name + "'" + " contains invalid characters.");
                 } else {
                     if (typeof new_fields == "object") {
 
                         // make sure field names are valid
                         var is_valid = true;
-                        for (var i = 0; i < new_fields.length; i++) {
-                            if (!validateName(new_fields[i])) {
+                        for(var i=0; i<new_fields.length; i++) {
+                            if(!validateName(new_fields[i])) {
                                 is_valid = false;
                                 break;
                             }
                         }
 
-                        if (is_valid) {
+                        if(is_valid) {
                             // cannot use indexOf due to <IE9 incompatibility
                             // de-duplicate the field list
                             var fields_literal = {};
-                            for (var i = 0; i < new_fields.length; i++) {
+                            for(var i=0; i<new_fields.length; i++) {
                                 fields_literal[ new_fields[i] ] = true;
                             }
                             delete fields_literal['ID']; // ID is a reserved field name
 
                             new_fields = [];
-                            for (var field in fields_literal) {
-                                if (fields_literal.hasOwnProperty(field)) {
+                            for(var field in fields_literal) {
+                                if( fields_literal.hasOwnProperty(field) ) {
                                     new_fields.push(field);
                                 }
                             }
@@ -589,14 +597,15 @@
                             error("One or more field names in the table definition contains invalid characters.");
                         }
                     }
-                    else if (typeof new_fields == "string") {
-                        if (validateName(new_fields)) {
+                    else if(typeof new_fields == "string")
+                    {
+                        if(validateName(new_fields)) {
                             var new_fields_array = [];
                             new_fields_array.push(new_fields);
                             alterTable(table_name, new_fields_array, default_values);
                             result = true;
                         }
-                        else {
+                        else{
                             error("One or more field names in the table definition contains invalid characters.");
                         }
                     }
@@ -606,36 +615,37 @@
             },
 
             // number of rows in a table
-            rowCount: function (table_name) {
+            rowCount: function(table_name) {
                 tableExistsWarn(table_name);
                 return rowCount(table_name);
             },
 
             // insert a row
-            insert: function (table_name, data) {
+            insert: function(table_name, data) {
                 tableExistsWarn(table_name);
-                return insert(table_name, validateData(table_name, data));
+                return insert(table_name, validateData(table_name, data) );
             },
 
             // insert or update based on a given condition
-            insertOrUpdate: function (table_name, query, data) {
+            insertOrUpdate: function(table_name, query, data) {
                 tableExistsWarn(table_name);
+
                 var result_ids = [];
-                if (!query) {
+                if(!query) {
                     result_ids = getIDs(db.data[table_name]);				// there is no query. applies to all records
-                } else if (typeof query == 'object') {				// the query has key-value pairs provided
+                } else if(typeof query == 'object') {				// the query has key-value pairs provided
                     result_ids = queryByValues(db.data[table_name], validFields(table_name, query));
-                } else if (typeof query == 'function') {				// the query has a conditional map function provided
+                } else if(typeof query == 'function') {				// the query has a conditional map function provided
                     result_ids = queryByFunction(db.data[table_name], query);
                 }
 
                 // no existing records matched, so insert a new row
-                if (result_ids.length == 0) {
-                    return insert(table_name, validateData(table_name, data));
+                if(result_ids.length == 0) {
+                    return insert(table_name, validateData(table_name, data) );
                 } else {
                     var ids = [];
-                    for (var n = 0; n < result_ids.length; n++) {
-                        update(table_name, result_ids, function (o) {
+                    for(var n=0; n<result_ids.length; n++) {
+                        update(table_name, result_ids, function(o) {
                             ids.push(o.ID);
                             return data;
                         });
@@ -646,24 +656,26 @@
             },
 
             // update rows
-            update: function (table_name, query, update_function) {
+            update: function(table_name, query, update_function) {
                 tableExistsWarn(table_name);
+
                 var result_ids = [];
-                if (!query) {
+                if(!query) {
                     result_ids = getIDs(db.data[table_name]);				// there is no query. applies to all records
-                } else if (typeof query == 'object') {				// the query has key-value pairs provided
+                } else if(typeof query == 'object') {				// the query has key-value pairs provided
                     result_ids = queryByValues(db.data[table_name], validFields(table_name, query));
-                } else if (typeof query == 'function') {				// the query has a conditional map function provided
+                } else if(typeof query == 'function') {				// the query has a conditional map function provided
                     result_ids = queryByFunction(db.data[table_name], query);
                 }
                 return update(table_name, result_ids, update_function);
             },
 
             // select rows
-            query: function (table_name, query, limit, start) {
+            query: function(table_name, query, limit, start) {
                 tableExistsWarn(table_name);
+
                 var result_ids = [];
-                if (!query) {
+                if(!query) {
                     result_ids = getIDs(db.data[table_name], limit, start); // no conditions given, return all records
                 } else if (typeof query == 'object') {			// the query has key-value pairs provided
                     result_ids = queryByValues(db.data[table_name], validFields(table_name, query), limit, start);
@@ -680,23 +692,24 @@
                 var result_ids = [];
                 if (!query) {
                     result_ids = getIDs(sortedTableData, limit, start); // no conditions given, return all records
-                } else if (typeof query == 'object') {			// the query has key-value pairs provided
+                } else if(typeof query == 'object') {			// the query has key-value pairs provided
                     result_ids = queryByValues(sortedTableData, validFields(table_name, query), limit, start);
-                } else if (typeof query == 'function') {		// the query has a conditional map function provided
+                } else if(typeof query == 'function') {		// the query has a conditional map function provided
                     result_ids = queryByFunction(sortedTableData, query, limit, start);
                 }
                 return select(table_name, result_ids);
             },
 
             // delete rows
-            deleteRows: function (table_name, query) {
+            deleteRows: function(table_name, query) {
                 tableExistsWarn(table_name);
+
                 var result_ids = [];
-                if (!query) {
+                if(!query) {
                     result_ids = getIDs(db.data[table_name]);
-                } else if (typeof query == 'object') {
+                } else if(typeof query == 'object') {
                     result_ids = queryByValues(db.data[table_name], validFields(table_name, query));
-                } else if (typeof query == 'function') {
+                } else if(typeof query == 'function') {
                     result_ids = queryByFunction(db.data[table_name], query);
                 }
                 return deleteRows(table_name, result_ids);
