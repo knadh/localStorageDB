@@ -9,11 +9,41 @@
 	v 2.0 June 2013
 	v 2.1 Nov 2013
 	v 2.2 Jan 2014 Contribution: Andy Hawkins (http://a904guy.com) 
+ v 2.3 Feb 2014 Contribution: Christian Kellner (http://orange-coding.net)
 
 	License	:	MIT License
 */
 
+!(function (_global, undefined) {
+
 function localStorageDB(db_name, engine) {
+
+        /**
+         * A native Object.values Method is not available. This is the fastest polyfill I came up with
+         * @see http://jsperf.com/localstoragdb
+         * @type {{}}
+         */
+        var shims = {};
+        shims.values = function (obj) {
+            var result = [], key;
+            for (key in obj) {
+                result.push(obj[key]);
+            }
+            return result;
+        };
+
+        /**
+         * returns true if the given object is an array
+         * @param obj
+         * @returns {boolean}
+         */
+        shims.isArray = function (obj) {
+            try {
+                return (obj instanceof Array);
+            } catch (e) {
+                return false;
+            }
+        };
 
 	var db_prefix = 'db_',
 		db_id = db_prefix + db_name,
@@ -163,20 +193,61 @@ function localStorageDB(db_name, engine) {
 		return results;
 	}
 	
-	// select rows in a table by field-value pairs, returns the IDs of matches
-	function queryByValues(table_name, data, limit, start) {
+        /**
+         * Transforms the given obj into an array and sorts it with the native sort function
+         * @param _table_name
+         * @param _sortObj
+         * @returns {*}
+         */
+        function sortData(_table_name, _sortObj) {
+            var table_data = db.data[_table_name],
+                sortedArray = shims.values(table_data),
+                sortMode = _sortObj.mode,
+                sortField = _sortObj.field;
+
+            //default is 'asc' if no search order string has been parsed
+            sortedArray.sort(function (a, b) {
+                var sort = "";
+                switch (sortMode.toLowerCase()) {
+                    case 'desc':
+                        sort = (a[sortField] < b[sortField]);
+                        break;
+                    case 'asc':
+                        sort = (a[sortField] > b[sortField]);
+                        break;
+					default: sort = (a[sortField] > b[sortField]);
+					         break;
+                }
+                return sort;
+            });
+
+            return sortedArray;
+        }
+
+
+        /**
+         *
+         * @param select rows in a table by field-value pairs, returns the IDs of matches
+         * @param data
+         * @param limit
+         * @param start
+         * @returns {Array}
+         */
+        function queryByValues(table_data, data, limit, start) {
 		var result_ids = [],
 			exists = false,
-			row = null;
-			start_n = 0;
+                row = null,
+                start_n = 0,
+                tableData = table_data;
 
 		// loop through all the records in the table, looking for matches
-		for(var ID in db.data[table_name]) {
-			if( !db.data[table_name].hasOwnProperty(ID) ) {
+            for (var key in tableData) {
+                if(!tableData.hasOwnProperty(key))
 				continue;
-			}
+			
 
-			row = db.data[table_name][ID];
+                var ID = tableData[key].ID
+                row = tableData[key];
 			exists = true;
 
 			for(var field in data) {
@@ -210,21 +281,22 @@ function localStorageDB(db_name, engine) {
 		return result_ids;
 	}
 	
-	// select rows in a table by a function, returns the IDs of matches
-	function queryByFunction(table_name, query_function, limit, start) {
+        // select rows in a table by a table_data, returns the IDs of matches
+        function queryByFunction(table_data, query_function, limit, start) {
 		var result_ids = [],
 			exists = false,
 			row = null,
-			start_n = 0;
+                start_n = 0,
+                tableData = table_data;
 
 		// loop through all the records in the table, looking for matches
-		for(var ID in db.data[table_name]) {
-			if( !db.data[table_name].hasOwnProperty(ID) ) {
+            for (var key in tableData) {
+
+                if(!tableData.hasOwnProperty(key))
 				continue;
-			}
-
-			row = db.data[table_name][ID];
-
+			
+                var ID = tableData[key].ID
+                row = tableData[key];
 			if( query_function( clone(row) ) == true ) {	// it's a match if the supplied conditional function is satisfied
 				if(typeof start === 'number' && start_n < start) {
 					start_n++;
@@ -240,12 +312,17 @@ function localStorageDB(db_name, engine) {
 	}
 	
 	// return all the IDs in a table
-	function getIDs(table_name, limit, start) {
+        function getIDs(table_data, limit, start) {
 		var result_ids = [],
-			start_n = 0;
+                start_n = 0,
+                tableData = table_data;
 
-		for(var ID in db.data[table_name]) {
-			if( db.data[table_name].hasOwnProperty(ID) ) {
+            for (var key in tableData) {
+
+                if(!tableData.hasOwnProperty(key))
+                    continue;
+
+                var ID = tableData[key].ID
 				if(typeof start === 'number' && start_n < start) {
 					start_n++;
 					continue;
@@ -257,7 +334,7 @@ function localStorageDB(db_name, engine) {
 					break;
 				}
 			}
-		}
+		
 		return result_ids;
 	}
 	
@@ -321,6 +398,7 @@ function localStorageDB(db_name, engine) {
 	}
 	
 	// clone an object
+        //needed to be sure noone ever edits the actual database object
 	function clone(obj) {
 		var new_obj = {};
 		for(var key in obj) {
@@ -483,14 +561,12 @@ function localStorageDB(db_name, engine) {
 		},
 
 		// alter a table		
-		alterTable: function(table_name, new_fields, default_values)
-		{
+            alterTable: function (table_name, new_fields, default_values) {
 			var result = false;
 			if(!validateName(table_name)) {
 				error("The database name '" + table_name + "'" + " contains invalid characters.");
 			} else {
-				if(typeof new_fields == "object")
-				{
+                    if (typeof new_fields == "object") {
 				
 					// make sure field names are valid
 					var is_valid = true;
@@ -558,11 +634,11 @@ function localStorageDB(db_name, engine) {
 
 			var result_ids = [];
 			if(!query) {
-				result_ids = getIDs(table_name);				// there is no query. applies to all records
+                    result_ids = getIDs(db.data[table_name]);				// there is no query. applies to all records
 			} else if(typeof query == 'object') {				// the query has key-value pairs provided
-				result_ids = queryByValues(table_name, validFields(table_name, query));
+                    result_ids = queryByValues(db.data[table_name], validFields(table_name, query));
 			} else if(typeof query == 'function') {				// the query has a conditional map function provided
-				result_ids = queryByFunction(table_name, query);
+                    result_ids = queryByFunction(db.data[table_name], query);
 			}
 
 			// no existing records matched, so insert a new row
@@ -587,11 +663,11 @@ function localStorageDB(db_name, engine) {
 
 			var result_ids = [];
 			if(!query) {
-				result_ids = getIDs(table_name);				// there is no query. applies to all records
+                    result_ids = getIDs(db.data[table_name]);				// there is no query. applies to all records
 			} else if(typeof query == 'object') {				// the query has key-value pairs provided
-				result_ids = queryByValues(table_name, validFields(table_name, query));
+                    result_ids = queryByValues(db.data[table_name], validFields(table_name, query));
 			} else if(typeof query == 'function') {				// the query has a conditional map function provided
-				result_ids = queryByFunction(table_name, query);
+                    result_ids = queryByFunction(db.data[table_name], query);
 			}
 			return update(table_name, result_ids, update_function);
 		},
@@ -602,13 +678,28 @@ function localStorageDB(db_name, engine) {
 			
 			var result_ids = [];
 			if(!query) {
-				result_ids = getIDs(table_name, limit, start); // no conditions given, return all records
+                    result_ids = getIDs(db.data[table_name], limit, start); // no conditions given, return all records
+                } else if (typeof query == 'object') {			// the query has key-value pairs provided
+                    result_ids = queryByValues(db.data[table_name], validFields(table_name, query), limit, start);
+                } else if (typeof query == 'function') {		// the query has a conditional map function provided
+                    result_ids = queryByFunction(db.data[table_name], query, limit, start);
+                }
+                return select(table_name, result_ids);
+            },
+            //select rows with sorting. Need to add a new function here to not break the actual API
+            //it would be better not to parse in each param as single ones, but on big object. e.g data:{query:{},limit:0,start:0} etc.
+            sortedQuery: function (table_name, query, sortObj, limit, start) {
+                tableExistsWarn(table_name);
+                var sortedTableData = sortData(table_name, sortObj);
+                var result_ids = [];
+                if (!query) {
+                    result_ids = getIDs(sortedTableData, limit, start); // no conditions given, return all records
 			} else if(typeof query == 'object') {			// the query has key-value pairs provided
-				result_ids = queryByValues(table_name, validFields(table_name, query), limit, start);
+                    result_ids = queryByValues(sortedTableData, validFields(table_name, query), limit, start);
 			} else if(typeof query == 'function') {		// the query has a conditional map function provided
-				result_ids = queryByFunction(table_name, query, limit, start);
+                    result_ids = queryByFunction(sortedTableData, query, limit, start);
 			}
-			return select(table_name, result_ids, limit);
+                return select(table_name, result_ids);
 		},
 
 		// delete rows
@@ -617,13 +708,22 @@ function localStorageDB(db_name, engine) {
 
 			var result_ids = [];
 			if(!query) {
-				result_ids = getIDs(table_name);
+                    result_ids = getIDs(db.data[table_name]);
 			} else if(typeof query == 'object') {
-				result_ids = queryByValues(table_name, validFields(table_name, query));
+                    result_ids = queryByValues(db.data[table_name], validFields(table_name, query));
 			} else if(typeof query == 'function') {
-				result_ids = queryByFunction(table_name, query);
+                    result_ids = queryByFunction(db.data[table_name], query);
 			}
 			return deleteRows(table_name, result_ids);
 		}
 	}
 }
+
+    if (typeof define === 'function' && define.amd) {
+        define(function () {
+            return localStorageDB;
+        });
+    }else{
+        _global['localStorageDB'] = localStorageDB;
+    }
+}(window));
