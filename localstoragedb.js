@@ -205,7 +205,7 @@ function localStorageDB(db_name, engine) {
                 sortMode = _sortObj.mode,
                 sortField = _sortObj.field;
 
-            //sortMode 0 aufsteigend, 1 = absteigend
+            //default is 'asc' if no search order string has been parsed
             sortedArray.sort(function (a, b) {
                 var sort = "";
                 switch (sortMode.toLowerCase()) {
@@ -215,6 +215,8 @@ function localStorageDB(db_name, engine) {
                     case 'asc':
                         sort = (a[sortField] > b[sortField]);
                         break;
+					default: sort = (a[sortField] > b[sortField]);
+					         break;
                 }
                 return sort;
             });

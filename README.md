@@ -105,13 +105,13 @@ lib.query("books", function(row) {
 ```
 ### Sorted Querys
 ```javascript
-db.sortedQuery("books", function(row){
+lib.sortedQuery("books", function(row){
     if(row.ID < 20){
         return true;
     }else{
         return false;
     }
-},{mode:0,field:"author"});
+},{mode:'asc',field:"author"});
 ```
 ### Example results from a query
 ```javascript
