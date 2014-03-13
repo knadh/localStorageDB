@@ -1,4 +1,4 @@
-# localStorageDB 2.2
+# localStorageDB 2.3
 localStorageDB is a simple layer over localStorage (and sessionStorage) that provides 
 a set of functions to store structured data like databases and tables.
 It provides basic insert/update/delete/query capabilities.
@@ -6,10 +6,11 @@ localStorageDB has no dependencies, and is not based on WebSQL. Underneath it al
 the structured data is stored as serialized JSON in localStorage or sessionStorage.
 
 - Kailash Nadh
-- v 1.9 November 2012
-- v 2.0 June 2013
-- v 2.1 November 2013
-- v 2.2 January 2014 Contribution: Andy Hawkins (http://a904guy.com)
+- v 1.9 Nov 2012
+- v 2.0 Jun 2013
+- v 2.1 Nov 2013
+- v 2.2 Jan 2014 Contribution: Andy Hawkins (http://a904guy.com)
+- v 2.3 Feb 2014 Contribution: Christian Kellner (http://orange-coding.net)
 - Documentation: [http://nadh.in/code/localstoragedb](http://nadh.in/code/localstoragedb)
 - Licensed: MIT license
 
@@ -23,7 +24,7 @@ var lib = new localStorageDB("library", localStorage);
 // Check if the database was just created. Useful for initial database setup
 if( lib.isNew() ) {
 
-	// create the "books" table
+    // create the "books" table
 	lib.createTable("books", ["code", "title", "author", "year", "copies"]);
 	
 	// insert some data
@@ -81,12 +82,16 @@ if(! (lib.columnExists("books", "publication") && lib.columnExists("books", "ISB
 // simple select queries
 lib.query("books", {year: 2011});
 lib.query("books", {year: 1999, author: "Norretranders"});
+lib.query("books", {
+    query: {year: 1999, author: "Norretranders"}
+    limit: 5
+);
 
 // select all books
 lib.query("books");
 
 // select all books published after 2003
-lib.query("books", function(row) {	// the callback function is applied to every row in the table
+lib.query("books", function(row) {    // the callback function is applied to every row in the table
 	if(row.year > 2003) {		// if it returns true, the row is selected
 		return true;
 	} else {
@@ -96,12 +101,43 @@ lib.query("books", function(row) {	// the callback function is applied to every 
 
 // select all books by Torday and Sparrow
 lib.query("books", function(row) {
-	if(row.author == "Torday" || row.author == "Sparrow") {
+    if(row.author == "Torday" || row.author == "Sparrow") {
 		return true;
 	} else {
 		return false;
 	}
 });
+
+// the same query using queryAll() with a dict{} of parameters rather than arguments
+lib.queryAll("books", {
+    query: function(row) {
+            if(row.author == "Torday" || row.author == "Sparrow") {
+		        return true;
+	        } else {
+		        return false;
+	    }
+    },
+    limit: 5
+});
+```
+
+### Sorting
+```javascript
+// select 5 rows sorted in ascending order by author
+lib.queryAll("books", { limit: 5,
+                        sort: [["author", "ASC"]]
+                      });
+
+// select all rows first sorted in ascending order by author, and then, in descending, by year
+lib.queryAll("books", { sort: [["author", "ASC"], ["year", "DESC"]] });
+
+lib.queryAll("books", { query: {"year": 2011},
+                        limit: 5,
+                        sort: [["author", "ASC"]]
+                      });
+
+// or using query()'s positional arguments, which is a little messy
+lib.query("books", null, null, null, [["author", "ASC"]]);
 ```
 
 ### Example results from a query
@@ -296,15 +332,23 @@ lib.commit(); // commit the deletions to localStorage
 				Every row is assigned an auto-incremented numerical ID automatically
 			</td>
 		</tr>
-		<tr>
+    	<tr>
 			<td>query()</td>
-			<td>table_name, query, limit, start</td>
+			<td>table_name, query, limit, start, sort</td>
 			<td>
 				Returns an array of rows (object literals) from a table matching the query.<br />
 				- query is either an object literal or null. If query is not supplied, all rows are returned<br />
 				- limit is the maximum number of rows to be returned<br />
-				- start is the  number of rows to be skipped from the beginning (offset)<br />
+    			- start is the  number of rows to be skipped from the beginning (offset)<br />
+    			- sort is an array of sort conditions, each one of which is an array in itself with two values<br />
 				Every returned row will have it's internal auto-incremented id assigned to the variable ID</td>
+		</tr>
+        <tr>
+			<td>queryAll()</td>
+			<td>table_name, params{}</td>
+			<td>
+                An alias for `query()` that takes a dict/object literal of params instead of positional arguments.
+            </td>
 		</tr>
 		<tr>
 			<td>update()</td>
@@ -333,4 +377,3 @@ lib.commit(); // commit the deletions to localStorage
 		</tr>
 	</tbody>
 </table>
-
