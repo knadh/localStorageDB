@@ -306,12 +306,10 @@
 			return num;
 		}
 
-
-
 		// commit the database to localStorage
 		function commit() {
 			try {
-				storage[db_id] = JSON.stringify(db);
+				storage.setItem(db_id, JSON.stringify(db));
 				return true;
 			} catch(e) {
 				return false;
