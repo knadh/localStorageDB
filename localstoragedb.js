@@ -2,7 +2,6 @@
 	Kailash Nadh (http://nadh.in)
 
 	localStorageDB v 2.3.1
-	September 2011
 	A simple database layer for localStorage
 
 	v 1.9 Nov 2012
@@ -45,7 +44,9 @@
 		// _________ database functions
 		// drop the database
 		function drop() {
-			delete storage[db_id];
+			if(storage.hasOwnProperty(db_id)) {
+				delete storage[db_id];
+			}
 			db = null;
 		}
 
