@@ -45,8 +45,10 @@
 		// _________ database functions
 		// drop the database
 		function drop() {
-			delete storage[db_id];
-			db = null;
+            if(storage[db_id]) {
+                delete storage[db_id];
+                db = null;
+            }
 		}
 
 		// number of tables in the database
