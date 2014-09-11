@@ -188,10 +188,14 @@
 		// sort a result set
 		function sort_results(field, order) {
 			return function(x, y) {
+				// case insensitive comparison for string values
+				var v1 = typeof(x[field]) === "string" ? x[field].toLowerCase() : x[field],
+					v2 = typeof(y[field]) === "string" ? y[field].toLowerCase() : y[field];
+
 				if(order === "DESC") {
-					return x[field] < y[field];
+					return v1 < v2;
 				} else {
-					return x[field] > y[field];
+					return v1 > v2;
 				}
 			};
 		}
