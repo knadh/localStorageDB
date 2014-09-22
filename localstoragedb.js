@@ -1,7 +1,7 @@
 /*
 	Kailash Nadh (http://nadh.in)
 
-	localStorageDB v 2.3.2
+	localStorageDB v 2.3.3
 	A simple database layer for localStorage
 
 	v 1.9 Nov 2012
@@ -193,9 +193,9 @@
 					v2 = typeof(y[field]) === "string" ? y[field].toLowerCase() : y[field];
 
 				if(order === "DESC") {
-					return v1 < v2;
+					return v1 == v2 ? 0 : (v1 < v2 ? 1 : -1);
 				} else {
-					return v1 > v2;
+					return v1 == v2 ? 0 : (v1 > v2 ? 1 : -1);
 				}
 			};
 		}
