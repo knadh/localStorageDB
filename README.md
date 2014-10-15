@@ -191,7 +191,7 @@ lib.update("books",
 		}
 	},
 	function(row) { // update function
-		row.copies+=5;
+		row.year+=5;
 		return row;
 	}
 );
