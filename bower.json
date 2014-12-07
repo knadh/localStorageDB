@@ -1,7 +1,7 @@
 {
   "name": "localStorageDB",
   "main": "localstoragedb.js",
-  "version": "2.3",
+  "version": "2.3.0",
   "homepage": "https://github.com/knadh/localStorageDB",
   "authors": [
     "Kailash Nadh <kailash.nadh@gmail.com>"
