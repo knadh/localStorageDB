@@ -1,7 +1,7 @@
 /*
 	Kailash Nadh (http://nadh.in)
 
-	localStorageDB v 2.3.3
+	localStorageDB v 2.3.0
 	A simple database layer for localStorage
 
 	v 1.9 Nov 2012
