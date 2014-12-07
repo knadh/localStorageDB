@@ -14,6 +14,9 @@ the structured data is stored as serialized JSON in localStorage or sessionStora
 - Documentation: [http://nadh.in/code/localstoragedb](http://nadh.in/code/localstoragedb)
 - Licensed: MIT license
 
+# Installation
+`bower install localstoragedb`
+
 # Usage / Examples
 ### Creating a database, table, and populating the table
 
