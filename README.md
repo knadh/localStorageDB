@@ -17,6 +17,14 @@ the structured data is stored as serialized JSON in localStorage or sessionStora
 # Installation
 `bower install localstoragedb`
 
+# Run Test Cases
+
+```shell
+bower install # install macha and chai for running test cases
+```
+`open test/local_storage_db_test.html in Browser to check the result`
+
+
 # Usage / Examples
 ### Creating a database, table, and populating the table
 
