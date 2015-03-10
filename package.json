@@ -1,0 +1,22 @@
+{
+    "name": "localStorageDB",
+    "main": "localstoragedb.js",
+    "version": "2.3.0",
+    "homepage": "https://github.com/knadh/localStorageDB",
+    "authors": [
+        "Kailash Nadh <kailash.nadh@gmail.com>"
+    ],
+    "description": "localStorageDB is a simple layer over localStorage (and sessionStorage) that provides a set of functions to store structured data like databases and tables. It provides basic insert/update/delete/query capabilities. localStorageDB has no dependencies, and is not based on WebSQL. Underneath it all, the structured data is stored as serialized JSON in localStorage or sessionStorage.",
+    "keywords": [
+        "localstorage",
+        "sessionstorage",
+        "sql",
+        "queries",
+        "websql"
+    ],
+    "license": "MIT",
+    "devDependencies": {
+        "mocha": "~2.1.0",
+        "chai": "~1.10.0"
+    }
+}
