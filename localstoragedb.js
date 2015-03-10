@@ -645,7 +645,7 @@
 	}
 
 	// make amd compatible
-	if(typeof module !== 'undefined') {
+	if(typeof module !== 'undefined' && module.exports) {
 		module.exports = localStorageDB;
 	} else  if(typeof define === 'function' && define.amd) {
 		define(function() {
