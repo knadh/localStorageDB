@@ -7,13 +7,15 @@
 	v 1.9 Nov 2012
 	v 2.0 June 2013
 	v 2.1 Nov 2013
-	v 2.2 Jan 2014 Contribution: Andy Hawkins (http://a904guy.com) 
+	v 2.2 Jan 2014 Contribution: Andy Hawkins (http://a904guy.com)
 	v 2.3 Feb 2014 Contribution: Christian Kellner (http://orange-coding.net)
 
 	License	:	MIT License
 */
 
-!(function (_global, undefined) {
+(function () {
+	var _global = window;
+
 	function localStorageDB(db_name, engine) {
 		var db_prefix = 'db_',
 			db_id = db_prefix + db_name,
@@ -643,7 +645,9 @@
 	}
 
 	// make amd compatible
-	if(typeof define === 'function' && define.amd) {
+	if(typeof module !== 'undefined') {
+		module.exports = localStorageDB;
+	} else  if(typeof define === 'function' && define.amd) {
 		define(function() {
 			return localStorageDB;
 		});
@@ -651,4 +655,4 @@
 		_global['localStorageDB'] = localStorageDB;
 	}
 
-}(window));
+})();
