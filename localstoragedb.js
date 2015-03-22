@@ -1,14 +1,15 @@
 /*
 	Kailash Nadh (http://nadh.in)
 
-	localStorageDB v 2.3.0
+	localStorageDB v 2.3.1
 	A simple database layer for localStorage
 
-	v 1.9 Nov 2012
-	v 2.0 June 2013
-	v 2.1 Nov 2013
-	v 2.2 Jan 2014 Contribution: Andy Hawkins (http://a904guy.com) 
+	v 2.3.1 Mar 2015
 	v 2.3 Feb 2014 Contribution: Christian Kellner (http://orange-coding.net)
+	v 2.2 Jan 2014 Contribution: Andy Hawkins (http://a904guy.com) 
+	v 2.1 Nov 2013
+	v 2.0 June 2013
+	v 1.9 Nov 2012
 
 	License	:	MIT License
 */
