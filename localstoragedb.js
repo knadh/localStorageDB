@@ -154,7 +154,7 @@
 		}
 
 		// select rows, given a list of IDs of rows in a table
-		function select(table_name, ids, start, limit, sort) {
+		function select(table_name, ids, start, limit, sort, distinct) {
 			var ID = null, results = [], row = null;
 
 			for(var i=0; i<ids.length; i++) {
@@ -168,6 +168,35 @@
 				for(var i=0; i<sort.length; i++) {
 					results.sort(sort_results(sort[i][0], sort[i].length > 1 ? sort[i][1] : null));
 				}
+			}
+			
+			// distinct params
+			if(distinct && distinct instanceof Array) {
+				for(var j=0; j<distinct.length; j++) {
+					var seen = {}, d = distinct[j];
+
+					for(var i=0; i<results.length; i++) {
+						if(results[i] === undefined) {
+							continue;
+						}
+
+						if(results[i].hasOwnProperty(d) && seen.hasOwnProperty(results[i][d])) {
+							delete(results[i]);
+						} else {
+							seen[results[i][d]] = 1;
+						}
+					}
+				}
+
+				// can't use .filter(ie8)
+				var new_results = [];
+				for(var i=0; i<results.length; i++) {
+					if(results[i] !== undefined) {
+						new_results.push(results[i]);
+					}
+				}
+
+				results = new_results;
 			}
 
 			// limit and offset
@@ -600,7 +629,7 @@
 			},
 
 			// select rows
-			query: function(table_name, query, limit, start, sort) {
+			query: function(table_name, query, limit, start, sort, distinct) {
 				tableExistsWarn(table_name);
 
 				var result_ids = [];
@@ -612,7 +641,7 @@
 					result_ids = queryByFunction(table_name, query, limit, start);
 				}
 
-				return select(table_name, result_ids, start, limit, sort);
+				return select(table_name, result_ids, start, limit, sort, distinct);
 			},
 
 			// alias for query() that takes a dict of params instead of positional arrguments
@@ -624,7 +653,8 @@
 						params.hasOwnProperty('query') ? params.query : null,
 						params.hasOwnProperty('limit') ? params.limit : null,
 						params.hasOwnProperty('start') ? params.start : null,
-						params.hasOwnProperty('sort') ? params.sort : null
+						params.hasOwnProperty('sort') ? params.sort : null,
+						params.hasOwnProperty('distinct') ? params.distinct : null
 					);
 				}
 			},
