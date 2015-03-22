@@ -617,12 +617,16 @@
 
 			// alias for query() that takes a dict of params instead of positional arrguments
 			queryAll: function(table_name, params) {
-				return this.query(table_name,
-					params.hasOwnProperty('query') ? params.query : null,
-					params.hasOwnProperty('limit') ? params.limit : null,
-					params.hasOwnProperty('start') ? params.start : null,
-					params.hasOwnProperty('sort') ? params.sort : null
-				);
+				if(!params) {
+					return this.query(table_name)
+				} else {
+					return this.query(table_name,
+						params.hasOwnProperty('query') ? params.query : null,
+						params.hasOwnProperty('limit') ? params.limit : null,
+						params.hasOwnProperty('start') ? params.start : null,
+						params.hasOwnProperty('sort') ? params.sort : null
+					);
+				}
 			},
 
 			// delete rows
