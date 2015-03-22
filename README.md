@@ -1,4 +1,4 @@
-# localStorageDB 2.3.0
+# localStorageDB 2.3.1
 localStorageDB is a simple layer over localStorage (and sessionStorage) that provides 
 a set of functions to store structured data like databases and tables.
 It provides basic insert/update/delete/query capabilities.
@@ -6,11 +6,12 @@ localStorageDB has no dependencies, and is not based on WebSQL. Underneath it al
 the structured data is stored as serialized JSON in localStorage or sessionStorage.
 
 - Kailash Nadh
-- v 1.9 Nov 2012
-- v 2.0 Jun 2013
-- v 2.1 Nov 2013
-- v 2.2 Jan 2014 Contribution: Andy Hawkins (http://a904guy.com)
+- v 2.3.1 Mar 2015
 - v 2.3.0 Feb 2014 Contribution: Christian Kellner (http://orange-coding.net)
+- v 2.2 Jan 2014 Contribution: Andy Hawkins (http://a904guy.com)
+- v 2.1 Nov 2013
+- v 2.0 Jun 2013
+- v 1.9 Nov 2012
 - Documentation: [http://nadh.in/code/localstoragedb](http://nadh.in/code/localstoragedb)
 - Licensed: MIT license
 
@@ -136,6 +137,13 @@ lib.queryAll("books", { query: {"year": 2011},
 
 // or using query()'s positional arguments, which is a little messy (DEPRECATED)
 lib.query("books", null, null, null, [["author", "ASC"]]);
+```
+
+### Distinct records
+```javascript
+lib.queryAll("books", { distinct: ["year", "author"]
+                      });
+
 ```
 
 ### Example results from a query
@@ -344,6 +352,7 @@ lib.commit(); // commit the deletions to localStorage
 				- limit is the maximum number of rows to be returned<br />
     			- start is the  number of rows to be skipped from the beginning (offset)<br />
     			- sort is an array of sort conditions, each one of which is an array in itself with two values<br />
+    			- distinct is an array of fields whose values have to be unique in the returned rows<br />
 				Every returned row will have it's internal auto-incremented id assigned to the variable ID</td>
 		</tr>
 		<tr>
