@@ -81,37 +81,32 @@ if(! (lib.columnExists("books", "publication") && lib.columnExists("books", "ISB
 ```
 
 ### Querying
+`query()` is deprecated. Use `queryAll()` instead.
+
 ```javascript
 // simple select queries
-lib.query("books", {year: 2011});
-lib.query("books", {year: 1999, author: "Norretranders"});
-lib.query("books", {
-    query: {year: 1999, author: "Norretranders"}
-    limit: 5
-);
+lib.queryAll("books", {
+	query: {year: 2011}
+});
+lib.queryAll("books", {
+	query: {year: 1999, author: "Norretranders"}
+});
 
 // select all books
-lib.query("books");
+lib.queryAll("books");
 
 // select all books published after 2003
-lib.query("books", function(row) {    // the callback function is applied to every row in the table
-	if(row.year > 2003) {		// if it returns true, the row is selected
-		return true;
-	} else {
-		return false;
+lib.queryAll("books", {
+	query: function(row) {    // the callback function is applied to every row in the table
+		if(row.year > 2003) {		// if it returns true, the row is selected
+			return true;
+		} else {
+			return false;
+		}
 	}
 });
 
 // select all books by Torday and Sparrow
-lib.query("books", function(row) {
-    if(row.author == "Torday" || row.author == "Sparrow") {
-		return true;
-	} else {
-		return false;
-	}
-});
-
-// the same query using queryAll() with a dict{} of parameters rather than arguments
 lib.queryAll("books", {
     query: function(row) {
             if(row.author == "Torday" || row.author == "Sparrow") {
@@ -139,7 +134,7 @@ lib.queryAll("books", { query: {"year": 2011},
                         sort: [["author", "ASC"]]
                       });
 
-// or using query()'s positional arguments, which is a little messy
+// or using query()'s positional arguments, which is a little messy (DEPRECATED)
 lib.query("books", null, null, null, [["author", "ASC"]]);
 ```
 
@@ -149,7 +144,7 @@ lib.query("books", null, null, null, [["author", "ASC"]]);
 // an ID field with the internal auto-incremented id of the row is also included
 // thus, ID is a reserved field name
 
-lib.query("books", {author: "ramachandran"});
+lib.queryAll("books", {query: {author: "ramachandran"}});
 
 /* results
 [
@@ -336,8 +331,13 @@ lib.commit(); // commit the deletions to localStorage
 			</td>
 		</tr>
     	<tr>
-			<td>query()</td>
+			<td>query() DEPRECATED</td>
 			<td>table_name, query, limit, start, sort</td>
+			<td></td>
+		</tr>
+        <tr>
+			<td>queryAll()</td>
+			<td>table_name, params{}</td>
 			<td>
 				Returns an array of rows (object literals) from a table matching the query.<br />
 				- query is either an object literal or null. If query is not supplied, all rows are returned<br />
@@ -345,13 +345,6 @@ lib.commit(); // commit the deletions to localStorage
     			- start is the  number of rows to be skipped from the beginning (offset)<br />
     			- sort is an array of sort conditions, each one of which is an array in itself with two values<br />
 				Every returned row will have it's internal auto-incremented id assigned to the variable ID</td>
-		</tr>
-        <tr>
-			<td>queryAll()</td>
-			<td>table_name, params{}</td>
-			<td>
-                An alias for `query()` that takes a dict/object literal of params instead of positional arguments.
-            </td>
 		</tr>
 		<tr>
 			<td>update()</td>
