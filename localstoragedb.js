@@ -251,7 +251,7 @@
 					}
 
 					if(typeof data[field] == 'string') {	// if the field is a string, do a case insensitive comparison
-						if( row[field].toString().toLowerCase() != data[field].toString().toLowerCase() ) {
+						if( row[field] === null || row[field].toString().toLowerCase() != data[field].toString().toLowerCase() ) {
 							exists = false;
 							break;
 						}
