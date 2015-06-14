@@ -603,12 +603,10 @@
 					return insert(table_name, validateData(table_name, data) );
 				} else {
 					var ids = [];
-					for(var n=0; n<result_ids.length; n++) {
-						update(table_name, result_ids, function(o) {
-							ids.push(o.ID);
-							return data;
-						});
-					}
+					update(table_name, result_ids, function(o) {
+						ids.push(o.ID);
+						return data;
+					});
 
 					return ids;
 				}
