@@ -25,6 +25,16 @@ bower install # install mocha and chai for running test cases
 ```
 `open test/local_storage_db_test.html in Browser to check the result`
 
+# Supported Browsers
+Browsers need to support "Local Storage" in order to make localeStraogeDB working.
+
+- IE 8<
+- Firefox 31<
+- Chrome 31<
+- Safari 7<
+- iOS Safari 7.1<
+- Android Browser 4.1<
+- Chrome for Android 42<
 
 # Usage / Examples
 ### Creating a database, table, and populating the table
