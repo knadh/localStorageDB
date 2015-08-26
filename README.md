@@ -26,7 +26,7 @@ bower install # install mocha and chai for running test cases
 `open test/local_storage_db_test.html in Browser to check the result`
 
 # Supported Browsers
-Browsers need to support "Local Storage" in order to make localeStraogeDB working.
+Browsers need to support "Local Storage" in order to make localeStorageDB working.
 
 - IE 8<
 - Firefox 31<
