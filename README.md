@@ -18,6 +18,8 @@ the structured data is stored as serialized JSON in localStorage or sessionStora
 # Installation
 `bower install localstoragedb`
 
+`jspm install uelarn/localstoragedb`
+
 # Run Test Cases
 
 ```shell
