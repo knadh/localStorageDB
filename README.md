@@ -229,6 +229,8 @@ lib.insertOrUpdate("books", {code: 'B003'}, {	code: "B003",
 						author: "Levitt and Dubner",
 						year: 2005,
 						copies: 15});
+
+lib.commit();
 ```
 
 ### Deleting
