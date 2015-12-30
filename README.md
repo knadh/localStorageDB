@@ -402,3 +402,8 @@ lib.commit(); // commit the deletions to localStorage
 		</tr>
 	</tbody>
 </table>
+
+# Storing complex objects
+While the library is meant for storing fundamental types (strings, numbers, bools), it is possible to store object literals and arrays as column values, with certain caveats. Some comparison queries, distinct etc. may not work. In addition, if you retrieve a stored array in a query result and modify its values in place, these changes will persist throughout further queries until the page is refreshed. This is because localStorageDB loads and unserializes data and keeps it in memory in a global pool until the page is refreshed, and arrays and objects returned in results are passed by reference.
+
+If you really need to store arrays and objects, you should implement a deep-copy function through which you pass the results before manipulation.
