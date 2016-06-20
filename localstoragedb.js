@@ -401,6 +401,41 @@
 			return new_data;
 		}
 
+		function renameTable(old_table, new_table){
+
+			if (old_table == new_table){
+				throw "The new table name is the same as the old one";
+			}
+
+			if (!db.data.hasOwnProperty(old_table) && !db.tables.hasOwnProperty(old_table)){
+				throw "The table doesn't exists on database";
+			}
+
+			if (db.data.hasOwnProperty(new_table) || db.tables.hasOwnProperty(new_table)){
+				throw "New table name already exists on database";
+			}
+
+			db.data[new_table] = db.data[old_table];
+			db.tables[new_table] = db.tables[old_table];
+
+			delete db.data[old_table];
+			delete db.tables[old_table];
+
+			storage.setItem(db_id, JSON.stringify(db));
+
+			return true;
+		}
+		
+		function showTables() {
+			var list = [];
+			for(var table in db.tables) {
+				if( db.tables.hasOwnProperty(table) ) {
+					list.push(table);
+				}
+			}
+			return list;
+		}
+
 		// ______________________ public methods
 
 		return {
@@ -418,6 +453,14 @@
 			drop: function() {
 				drop();
 			},
+
+			// Rename table
+			renameTable: function(old_table, new_table){
+				return renameTable(old_table, new_table);
+			},	
+	
+			// Added
+			showTables: showTables,
 
 			// serialize the database
 			serialize: function() {
