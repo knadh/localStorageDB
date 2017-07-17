@@ -6,7 +6,7 @@
 
 	v 2.3.1 Mar 2015
 	v 2.3 Feb 2014 Contribution: Christian Kellner (http://orange-coding.net)
-	v 2.2 Jan 2014 Contribution: Andy Hawkins (http://a904guy.com) 
+	v 2.2 Jan 2014 Contribution: Andy Hawkins (http://a904guy.com)
 	v 2.1 Nov 2013
 	v 2.0 June 2013
 	v 1.9 Nov 2012
@@ -170,7 +170,7 @@
 					results.sort(sort_results(sort[i][0], sort[i].length > 1 ? sort[i][1] : null));
 				}
 			}
-			
+
 			// distinct params
 			if(distinct && distinct instanceof Array) {
 				for(var j=0; j<distinct.length; j++) {
@@ -675,13 +675,19 @@
 		}
 	}
 
-	// make amd compatible
-	if(typeof define === 'function' && define.amd) {
-		define(function() {
-			return localStorageDB;
-		});
-	} else {
+	// export to Node...
+	if ( typeof module !== 'undefined' && module.exports ) {
+		module.exports = localStorageDB;
+	}
+
+	// ...or as AMD module...
+	else if ( typeof define === 'function' && define.amd ) {
+		define( function () { return localStorageDB; });
+	}
+
+	// ...or as browser global
+	else {
 		_global['localStorageDB'] = localStorageDB;
 	}
 
-}(window));
+}(typeof window !== 'undefined' ? window : this));
