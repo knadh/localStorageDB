@@ -1,8 +1,8 @@
 # localStorageDB 2.3.1
-localStorageDB is a simple layer over localStorage (and sessionStorage) that provides 
+localStorageDB is a simple layer over localStorage (and sessionStorage) that provides
 a set of functions to store structured data like databases and tables.
 It provides basic insert/update/delete/query capabilities.
-localStorageDB has no dependencies, and is not based on WebSQL. Underneath it all, 
+localStorageDB has no dependencies, and is not based on WebSQL. Underneath it all,
 the structured data is stored as serialized JSON in localStorage or sessionStorage.
 
 - Kailash Nadh
@@ -16,7 +16,16 @@ the structured data is stored as serialized JSON in localStorage or sessionStora
 - Licensed: MIT license
 
 # Installation
+
+## NPM
+`npm install localstoragedb`
+
+## Yarn
+`yarn install localstoragedb`
+
+## Bower
 `bower install localstoragedb`
+
 
 # Run Test Cases
 
@@ -48,7 +57,7 @@ if( lib.isNew() ) {
 
     // create the "books" table
 	lib.createTable("books", ["code", "title", "author", "year", "copies"]);
-	
+
 	// insert some data
 	lib.insert("books", {code: "B001", title: "Phantoms in the brain", author: "Ramachandran", year: 1999, copies: 10});
 	lib.insert("books", {code: "B002", title: "The tell-tale brain", author: "Ramachandran", year: 2011, copies: 10});
@@ -58,7 +67,7 @@ if( lib.isNew() ) {
 	lib.insert("books", {code: "B006", title: "Salmon fishing in the Yemen", author: "Torday", year: 2007, copies: 10});
 	lib.insert("books", {code: "B007", title: "The user illusion", author: "Norretranders", year: 1999, copies: 10});
 	lib.insert("books", {code: "B008", title: "Hubble: Window of the universe", author: "Sparrow", year: 2010, copies: 10});
-	
+
 	// commit the database to localStorage
 	// all create/drop/insert/update/delete operations should be committed
 	lib.commit();
@@ -200,7 +209,7 @@ lib.queryAll("books", {query: {author: "ramachandran"}});
 // change the title of books published in 1999 to "Unknown"
 lib.update("books", {year: 1999}, function(row) {
 	row.title = "Unknown";
-	
+
 	// the update callback function returns to the modified record
 	return row;
 });
@@ -349,7 +358,7 @@ lib.commit(); // commit the deletions to localStorage
 			<td>Returns the number of rows in a table</td>
 		</tr>
 
-		
+
 		<tr>
 			<td>insert()</td>
 			<td>table_name, data</td>
