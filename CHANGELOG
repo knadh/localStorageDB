@@ -1,3 +1,7 @@
+v2.3.2 [20 Mar 2018]
+- Added getitem, setItem, replace
+- Updated "validFields" so that if query parameter in not a valid field for table, an error will be thrown instead of ignoring field for update/delete query
+
 v2.3.1 [22 Mar 2015]
 - Added support for 'distinct' queries
 
