@@ -10,7 +10,7 @@ declare type localStorageDB_callback = (object: localStorageDB_fields) => localS
 declare type localStorageDB_callbackFilter = (object: localStorageDB_fields) => boolean;
 
 declare class localStorageDB {
-    constructor(database_name: string, storage_engine?: string); // Constructor: storage_engine can either be localStorage (default) or sessionStorage
+    constructor(database_name: string, storage_engine?: Storage); // Constructor: storage_engine can either be localStorage (default) or sessionStorage
     isNew(): boolean; // Returns true if a database was created at the time of initialisation with the constructor
     drop(): void; // Deletes a database, and purges it from localStorage
     getItem(key: string): string; // Retrieve specified value from localStorage
