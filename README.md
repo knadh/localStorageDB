@@ -303,8 +303,6 @@ lib.commit(); // commit the deletions to localStorage
 			<td></td>
 			<td>Returns the entire database as serialized JSON</td>
 		</tr>
-
-
 		<tr>
 			<td>tableExists()</td>
 			<td>table_name</td>
@@ -358,8 +356,6 @@ lib.commit(); // commit the deletions to localStorage
 			<td>table_name</td>
 			<td>Returns the number of rows in a table</td>
 		</tr>
-
-
 		<tr>
 			<td>insert()</td>
 			<td>table_name, data</td>
