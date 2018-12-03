@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html><head><title>.</title>
+<style>
+button {
+    font-size:20px;
+    padding: 5px;
+}
+
+input {
+    padding: 5px;
+}
+
+#tblContent th {
+    padding: 5px;
+    border: solid 1px silver;
+}
+
+#tblContent td {
+    padding: 5px;
+    border: solid 1px silver;
+}
+</style>
+</head>
+<body>
+    <table>
+        <tr>
+            <td>Code</td>
+            <td><input id="code"></td>
+        </tr>
+        <tr>
+            <td>Title</td>
+            <td><input id="title"></td>
+        </tr>
+        <tr>
+            <td>Author</td>
+            <td><input id="author"></td>
+        <tr>
+            <td>Year</td>
+            <td><input id="year"></td>
+        </tr>
+        <tr>            
+            <td>Copies</td>
+            <td><input id="copies"></td>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+            <td><button id="btnInsert">Insert Data</button></td>
+        </tr>
+    </table>
+    
+    <hr>
+
+    <table id="tblContent">
+        <thead>
+            <tr>
+                <th>Code</th>
+                <th>Title</th>
+                <th>Author</th>
+                <th>Year</th>
+                <th>Copies</th>
+                <th>&nbsp;</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+    
+    <hr>    
+
+    <script src="node_modules/jquery/dist/jquery.js"></script>
+    <script src="node_modules/localstoragedb/localstoragedb.js"></script>
+    <script src="main.js"></script>
+</body>
+</html>
