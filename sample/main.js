@@ -38,7 +38,6 @@ $(document).ready(function(){
 
     $('#btnInsert').click(function(){
 
-        $(':input').val('');
         
         if (! db.tableExists(tableName) )
         {
@@ -67,6 +66,7 @@ $(document).ready(function(){
             vCopies + '</td><td><a href="#" onclick="rowDelete(this); return false;">Delete</a></td></tr>';
 
         $("#tblContent tbody").append(newRowContent);
+        $(':input').val('');
 
     });
 
