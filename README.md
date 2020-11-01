@@ -22,7 +22,7 @@ the structured data is stored as serialized JSON in localStorage or sessionStora
 `npm install localstoragedb`
 
 ## Yarn
-`yarn install localstoragedb`
+`yarn add localstoragedb`
 
 ## Bower
 `bower install localstoragedb`
