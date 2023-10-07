@@ -76,7 +76,7 @@ if( lib.isNew() ) {
 ```
 
 ### Creating and populating a table in one go
-```
+```javascript
 	// rows for pre-population
 	var rows = [
 		{code: "B001", title: "Phantoms in the brain", author: "Ramachandran", year: 1999, copies: 10},
